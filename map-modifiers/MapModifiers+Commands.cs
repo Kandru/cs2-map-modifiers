@@ -1,45 +1,79 @@
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
-//using CounterStrikeSharp.API.Modules.Admin;
+using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
 
-namespace MapModifiersPlugin;
-
-public partial class MapModifiersPlugin : BasePlugin, IPluginConfig<PluginConfig>
+namespace MapModifiersPlugin
 {
-    [ConsoleCommand("cs2_addspawn", "Allows to add new spawn points")]
-    //TODO: [RequiresPermissions("@mapmodifiers/addSpawnPoints")]
-    [CommandHelper(whoCanExecute:CommandUsage.CLIENT_ONLY, minArgs:1, usage:"[ct/t]")]
-    public void CommandAddSpawn(CCSPlayerController? player, CommandInfo command)
+    public partial class MapModifiersPlugin : BasePlugin, IPluginConfig<PluginConfig>
     {
-        if (player == null || !player.PlayerPawn.IsValid) return;
-        var spawnType = command.GetArg(1);
-        if (!spawnType.Equals("ct") && !spawnType.Equals("t"))
+        [ConsoleCommand("addspawn", "Allows to add new spawn points")]
+        [RequiresPermissions("@mapmodifiers/addspawn")]
+        [CommandHelper(whoCanExecute:CommandUsage.CLIENT_ONLY, minArgs:1, usage:"[ct/t]")]
+        public void CommandAddSpawn(CCSPlayerController? player, CommandInfo command)
         {
-            command.ReplyToCommand("[MapModifiersPlugin] Invalid spawn type. Use 'ct' or 't'");
-            return;
+            if (player == null || !player.PlayerPawn.IsValid) return;
+            var spawnType = command.GetArg(1);
+            if (!spawnType.Equals("ct") && !spawnType.Equals("t"))
+            {
+                command.ReplyToCommand("[MapModifiersPlugin] Invalid spawn type. Use 'ct' or 't'");
+                return;
+            }
+            var origin = player.PlayerPawn.Value.AbsOrigin;
+            if (origin == null)
+            {
+                command.ReplyToCommand("[MapModifiersPlugin] You do not have a valid position");
+                return;
+            }
+            var angle = player.PlayerPawn.Value.AbsRotation;
+            if (angle == null)
+            {
+                command.ReplyToCommand("[MapModifiersPlugin] You do not have a valid angle");
+                return;
+            }
+            if (origin.X == 0 && origin.Y == 0 && origin.Z == 0)
+            {
+                command.ReplyToCommand("[MapModifiersPlugin] You do not have a valid position");
+                return;
+            }
+            MapConfigSpawnPoint newSpawnPoint = new()
+            {
+                Origin = [origin.X, origin.Y, origin.Z],
+                Angle = [angle.X, angle.Y, angle.Z],
+            };
+            // create spawnpoint
+            CreateSpawnPoint(spawnType, newSpawnPoint);
+            // save configuration
+            if (spawnType == "t") {
+                Config.MapConfigs[_currentMap].TSpawns.Add(newSpawnPoint);
+            }else{
+                Config.MapConfigs[_currentMap].CTSpawns.Add(newSpawnPoint);
+            }
+            SaveConfig();
+            command.ReplyToCommand($"[MapModifiersPlugin] Created Spawn point for {spawnType} at {origin.X}, {origin.Y}, {origin.Z} with angle {angle.X}, {angle.Y}, {angle.Z}");
         }
-        var origin = player.PlayerPawn.Value.AbsOrigin;
-        if (origin == null)
+
+        [ConsoleCommand("showspawns", "Whether to show all spawn points or not")]
+        [RequiresPermissions("@mapmodifiers/showspawns")]
+        [CommandHelper(whoCanExecute:CommandUsage.CLIENT_ONLY, minArgs:1, usage:"[0/1]")]
+        public void CommandShowSpawns(CCSPlayerController? player, CommandInfo command)
         {
-            command.ReplyToCommand("[MapModifiersPlugin] You do not have a valid position");
-            return;
+            if (player == null || !player.PlayerPawn.IsValid) return;
+            var show = command.GetArg(1);
+            if (!show.Equals("0") && !show.Equals("1"))
+            {
+                command.ReplyToCommand("[MapModifiersPlugin] Invalid option. Use '0' or '1'");
+                return;
+            }
+            if (show.Equals("0"))
+            {
+                var amountHidden = RemoveSpawnPointMarkers();
+                command.ReplyToCommand($"[MapModifiersPlugin] Hid {amountHidden} spawn points");
+                return;
+            }else{
+                var amountSpawnPoints = ShowSpawnPointMarkers();
+                command.ReplyToCommand($"[MapModifiersPlugin] Showing {amountSpawnPoints} spawn points");
+            }
         }
-        var angle = player.PlayerPawn.Value.AbsRotation;
-        if (angle == null)
-        {
-            command.ReplyToCommand("[MapModifiersPlugin] You do not have a valid angle");
-            return;
-        }
-        // create spawnpoint
-        CreateSpawnPoint(spawnType, new SpawnPoint
-        {
-            Origin = [origin.X, origin.Y, origin.Z],
-            Angle = [angle.X, angle.Y, angle.Z]
-        });
-        command.ReplyToCommand($"[MapModifiersPlugin] Created Spawn point for {spawnType} at {origin.X}, {origin.Y}, {origin.Z} with angle {angle.X}, {angle.Y}, {angle.Z}");
-        // TODO: save to config
-        //var jsonString = JsonSerializer.Serialize(_config);
-        //File.WriteAllText(_configPath, jsonString);
     }
 }
