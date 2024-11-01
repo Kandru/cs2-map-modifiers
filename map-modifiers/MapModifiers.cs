@@ -27,6 +27,11 @@ namespace MapModifiersPlugin
             }
         }
 
+        public override void Unload(bool hotReload)
+        {
+            Console.WriteLine("[MapModifiersPlugin] Unloaded Plugin!");
+        }
+
         private void OnMapStart(string mapName)
         {
             // set map name
