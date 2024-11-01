@@ -9,7 +9,7 @@ namespace MapModifiersPlugin
         public override string ModuleAuthor => "Jon-Mailes Graeffe <mail@jonni.it> / Kalle <kalle@kandru.de>";
         public override string ModuleVersion => "0.0.11";
 
-        private string _currentMap = Server.MapName.ToLower();
+        private string _currentMap = "";
     
         public override void Load(bool hotReload)
         {
@@ -21,9 +21,11 @@ namespace MapModifiersPlugin
             RegisterListener<Listeners.OnServerPrecacheResources>(OnServerPrecacheResources);
             // print message if hot reload
             if (hotReload) {
+                // set current map
+                _currentMap = Server.MapName;
                 // initialize configuration
                 InitializeConfig(_currentMap);                
-                Console.WriteLine("[MapModifiersPlugin] Hot reload detected, restart map for all changes to take effect!");
+                Console.WriteLine("[MapModifiers] Hot reload detected, restart map for all changes to take effect!");
             }
         }
 
