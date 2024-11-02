@@ -7,7 +7,7 @@ namespace MapModifiers
 {
     public partial class MapModifiers : BasePlugin, IPluginConfig<PluginConfig>
     {
-        private void OnMapStartSpawnPoints(string mapName, MapConfig mapConfig)
+        private static void OnMapStartSpawnPoints(string mapName, MapConfig mapConfig)
         {
             // TODO: does not work on map start. Should run on round start instead
             Console.WriteLine("[MapModifiersPlugin] Modifying spawn points for map " + mapName);
@@ -35,7 +35,7 @@ namespace MapModifiers
             }
         }
 
-        private int ShowSpawnPointMarkers()
+        private static int ShowSpawnPointMarkers()
         {
             var spawnEntities = Utilities.FindAllEntitiesByDesignerName<SpawnPoint>("info_player_").ToArray();
             var count = 0;
@@ -84,7 +84,7 @@ namespace MapModifiers
             return count;
         }
 
-        private int RemoveSpawnPointMarkers()
+        private static int RemoveSpawnPointMarkers()
         {
             var spawnEntities = Utilities.FindAllEntitiesByDesignerName<CDynamicProp>("prop_dynamic").ToArray();
             var count = 0;
@@ -122,7 +122,7 @@ namespace MapModifiers
             }
         }
 
-        private int RemoveSpawnPoints(bool removeCustom = false)
+        private static int RemoveSpawnPoints(bool removeCustom = false)
         {
             var spawnEntities = Utilities.FindAllEntitiesByDesignerName<SpawnPoint>("info_player_").ToArray();
             var count = 0;
@@ -135,7 +135,7 @@ namespace MapModifiers
             return count;
         }
 
-        private void RemoveSpawnPoint(string globalname = "")
+        private static void RemoveSpawnPoint(string globalname = "")
         {
             var spawnEntities = Utilities.FindAllEntitiesByDesignerName<SpawnPoint>("info_player_").ToArray();
             foreach (var entity in spawnEntities.Where(x => x.Globalname != null && x.Globalname == globalname))
@@ -145,7 +145,7 @@ namespace MapModifiers
             }
         }
 
-        private void CreateSpawnPoint(string type, MapConfigSpawnPoint spawnPoint)
+        private static void CreateSpawnPoint(string type, MapConfigSpawnPoint spawnPoint)
         {
             SpawnPoint spawn;
             if (type == "t")

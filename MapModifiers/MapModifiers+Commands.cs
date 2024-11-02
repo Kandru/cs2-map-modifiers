@@ -59,7 +59,7 @@ namespace MapModifiers
         [ConsoleCommand("showspawns", "Whether to show all spawn points or not")]
         [RequiresPermissions("@mapmodifiers/showspawns")]
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY, minArgs: 1, usage: "[0/1]")]
-        public void CommandShowSpawns(CCSPlayerController? player, CommandInfo command)
+        public static void CommandShowSpawns(CCSPlayerController? player, CommandInfo command)
         {
             if (player == null || !player.PlayerPawn.IsValid) return;
             var show = command.GetArg(1);
