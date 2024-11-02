@@ -39,7 +39,7 @@ namespace MapModifiers
 
         private void LoadConfig()
         {
-            _configPath = Path.Combine(ModuleDirectory, $"../../configs/plugins/map-modifiers/map-modifiers.json");
+            _configPath = Path.Combine(ModuleDirectory, $"../../configs/plugins/MapModifiers/MapModifiers.json");
         }
 
         private void InitializeConfig(string mapName)
