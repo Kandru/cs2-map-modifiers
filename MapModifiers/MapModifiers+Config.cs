@@ -80,7 +80,7 @@ namespace MapModifiers
 
         private void SaveConfig()
         {
-            var jsonString = JsonSerializer.Serialize(Config);
+            var jsonString = JsonSerializer.Serialize(Config, new JsonSerializerOptions { WriteIndented = true });
             File.WriteAllText(_configPath, jsonString);
         }
     }
