@@ -7,6 +7,7 @@ namespace MapModifiers
 {
     public class MapConfigSpawnPoint
     {
+        [JsonPropertyName("name")] public string Name { get; set; } = "unnamed";
         [JsonPropertyName("origin")] public float[] Origin { get; set; } = new float[3];
         [JsonPropertyName("angle")] public float[] Angle { get; set; } = new float[3];
     }
