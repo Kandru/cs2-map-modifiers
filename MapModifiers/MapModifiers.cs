@@ -37,7 +37,7 @@ namespace MapModifiers
         private void OnMapStart(string mapName)
         {
             // set map name
-            _currentMap = mapName.ToLower();;
+            _currentMap = mapName.ToLower();
             // initialize configuration
             InitializeConfig(mapName.ToLower());
             // iterate through all configurations
