@@ -9,7 +9,7 @@ namespace MapModifiers
     {
         [ConsoleCommand("addspawn", "Allows to add new spawn points")]
         [RequiresPermissions("@mapmodifiers/addspawn")]
-        [CommandHelper(whoCanExecute:CommandUsage.CLIENT_ONLY, minArgs:1, usage:"[ct/t]")]
+        [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY, minArgs: 1, usage: "[ct/t]")]
         public void CommandAddSpawn(CCSPlayerController? player, CommandInfo command)
         {
             if (player == null || !player.PlayerPawn.IsValid || player.PlayerPawn.Value == null) return;
@@ -44,9 +44,12 @@ namespace MapModifiers
             // create spawnpoint
             CreateSpawnPoint(spawnType, newSpawnPoint);
             // save configuration
-            if (spawnType == "t") {
+            if (spawnType == "t")
+            {
                 Config.MapConfigs[_currentMap].TSpawns.Add(newSpawnPoint);
-            }else{
+            }
+            else
+            {
                 Config.MapConfigs[_currentMap].CTSpawns.Add(newSpawnPoint);
             }
             SaveConfig();
@@ -55,7 +58,7 @@ namespace MapModifiers
 
         [ConsoleCommand("showspawns", "Whether to show all spawn points or not")]
         [RequiresPermissions("@mapmodifiers/showspawns")]
-        [CommandHelper(whoCanExecute:CommandUsage.CLIENT_ONLY, minArgs:1, usage:"[0/1]")]
+        [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY, minArgs: 1, usage: "[0/1]")]
         public void CommandShowSpawns(CCSPlayerController? player, CommandInfo command)
         {
             if (player == null || !player.PlayerPawn.IsValid) return;
@@ -70,7 +73,9 @@ namespace MapModifiers
                 var amountHidden = RemoveSpawnPointMarkers();
                 command.ReplyToCommand($"[MapModifiersPlugin] Hid {amountHidden} spawn points");
                 return;
-            }else{
+            }
+            else
+            {
                 var amountSpawnPoints = ShowSpawnPointMarkers();
                 command.ReplyToCommand($"[MapModifiersPlugin] Showing {amountSpawnPoints} spawn points");
             }

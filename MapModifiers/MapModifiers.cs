@@ -10,7 +10,7 @@ namespace MapModifiers
         public override string ModuleVersion => "0.0.11";
 
         private string _currentMap = "";
-    
+
         public override void Load(bool hotReload)
         {
             // initialize configuration
@@ -20,11 +20,12 @@ namespace MapModifiers
             RegisterListener<Listeners.OnMapStart>(OnMapStart);
             RegisterListener<Listeners.OnServerPrecacheResources>(OnServerPrecacheResources);
             // print message if hot reload
-            if (hotReload) {
+            if (hotReload)
+            {
                 // set current map
                 _currentMap = Server.MapName;
                 // initialize configuration
-                InitializeConfig(_currentMap);                
+                InitializeConfig(_currentMap);
                 Console.WriteLine("[MapModifiers] Hot reload detected, restart map for all changes to take effect!");
             }
         }
@@ -49,7 +50,7 @@ namespace MapModifiers
                 foreach (var command in mapConfig.ServerCommands)
                 {
                     Server.ExecuteCommand(command);
-                 
+
                     Console.WriteLine("[MapModifiersPlugin] Executed server commands for this map!");
                 }
 

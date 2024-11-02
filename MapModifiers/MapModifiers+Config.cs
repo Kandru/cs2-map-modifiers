@@ -37,15 +37,17 @@ namespace MapModifiers
         private MapConfig[] _currentMapConfigs = Array.Empty<MapConfig>();
         private string _configPath = "";
 
-        private void LoadConfig() {
+        private void LoadConfig()
+        {
             _configPath = Path.Combine(ModuleDirectory, $"../../configs/plugins/map-modifiers/map-modifiers.json");
         }
 
-        private void InitializeConfig(string mapName) {
+        private void InitializeConfig(string mapName)
+        {
             // select map configs whose regexes (keys) match against the map name
             _currentMapConfigs = (from mapConfig in Config.MapConfigs
-                where FileSystemName.MatchesSimpleExpression(mapConfig.Key, mapName)
-                select mapConfig.Value).ToArray();
+                                  where FileSystemName.MatchesSimpleExpression(mapConfig.Key, mapName)
+                                  select mapConfig.Value).ToArray();
 
             if (_currentMapConfigs.Length > 0)
             {
@@ -60,7 +62,9 @@ namespace MapModifiers
                     // there is no config to apply
                     Console.WriteLine("[MapModifiersPlugin] No map-specific configuration for " + mapName + " or default one found. Skipping!");
                 }
-            }else{
+            }
+            else
+            {
                 Console.WriteLine("[MapModifiersPlugin] No map-specific configuration for " + mapName + " found. Creating default one!");
                 // create default configuration
                 Config.MapConfigs.Add(mapName, new MapConfig());
@@ -74,7 +78,8 @@ namespace MapModifiers
             Console.WriteLine("[MapModifiersPlugin] Initialized map configuration!");
         }
 
-        private void SaveConfig() {
+        private void SaveConfig()
+        {
             var jsonString = JsonSerializer.Serialize(Config);
             File.WriteAllText(_configPath, jsonString);
         }

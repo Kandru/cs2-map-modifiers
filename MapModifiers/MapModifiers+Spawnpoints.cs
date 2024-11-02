@@ -65,13 +65,16 @@ namespace MapModifiers
                 spawnEntity.AbsRotation.Z = spawnPoint.AbsRotation.Z;
                 spawnEntity.DispatchSpawn();
                 spawnEntity.SetModel("models/props/cs_office/file_cabinet1.vmdl");
-                if (spawnPoint.DesignerName.Contains("counterterrorist")) {
+                if (spawnPoint.DesignerName.Contains("counterterrorist"))
+                {
                     // CT spawn
                     spawnEntity.Render = Color.FromArgb(0, 0, 255);
                     // if custom CT spawn
                     if (spawnPoint.Globalname.Contains("mapmodifiers_spawnpoint_"))
                         spawnEntity.Render = Color.FromArgb(4, 138, 255);
-                }else{
+                }
+                else
+                {
                     spawnEntity.Render = Color.FromArgb(255, 0, 0);
                     // if custom T spawn
                     if (spawnPoint.Globalname.Contains("mapmodifiers_spawnpoint_"))
@@ -132,7 +135,8 @@ namespace MapModifiers
             return count;
         }
 
-        private void RemoveSpawnPoint(string globalname = "") {
+        private void RemoveSpawnPoint(string globalname = "")
+        {
             var spawnEntities = Utilities.FindAllEntitiesByDesignerName<SpawnPoint>("info_player_").ToArray();
             foreach (var entity in spawnEntities.Where(x => x.Globalname != null && x.Globalname == globalname))
             {
@@ -141,11 +145,15 @@ namespace MapModifiers
             }
         }
 
-        private void CreateSpawnPoint(string type, MapConfigSpawnPoint spawnPoint) {
+        private void CreateSpawnPoint(string type, MapConfigSpawnPoint spawnPoint)
+        {
             SpawnPoint spawn;
-            if (type == "t") {
+            if (type == "t")
+            {
                 spawn = Utilities.CreateEntityByName<SpawnPoint>("info_player_terrorist")!;
-            }else{
+            }
+            else
+            {
                 spawn = Utilities.CreateEntityByName<SpawnPoint>("info_player_counterterrorist")!;
             }
             if (spawn == null || spawn.AbsOrigin == null || spawn.AbsRotation == null || !spawn.IsValid)

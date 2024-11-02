@@ -10,7 +10,8 @@ namespace MapModifiers
             "models/props/cs_office/file_cabinet1.vmdl"
         };
 
-        private void OnServerPrecacheResources(ResourceManifest manifest) {
+        private void OnServerPrecacheResources(ResourceManifest manifest)
+        {
             foreach (var model in _precacheModels)
             {
                 Console.WriteLine($"[MapModifiers] Precaching {model}");
