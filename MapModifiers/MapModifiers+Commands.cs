@@ -119,7 +119,7 @@ namespace MapModifiers
         }
 
         [ConsoleCommand("showspawns", "Whether to show all spawn points or not")]
-        //[RequiresPermissions("@mapmodifiers/spawnpoints")]
+        [RequiresPermissions("@mapmodifiers/spawnpoints")]
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY, minArgs: 0)]
         public void CommandShowSpawns(CCSPlayerController? player, CommandInfo command)
         {
