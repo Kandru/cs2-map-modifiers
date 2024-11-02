@@ -44,7 +44,10 @@ namespace MapModifiers
                 count++;
                 var spawnPoint = entity.As<SpawnPoint>();
                 CDynamicProp spawnEntity = Utilities.CreateEntityByName<CDynamicProp>("prop_dynamic")!;
-                spawnEntity.Globalname = $"mapmodifiers_spawnpointmarker_{(int)spawnPoint.AbsOrigin.X}{(int)spawnPoint.AbsOrigin.Y}{(int)spawnPoint.AbsOrigin.Z}";
+                // random string due to a problem when deleting entities and create them again with the same name
+                // they will not show up again
+                var randomString = new string(Enumerable.Range(0, 5).Select(_ => (char)new Random().Next('a', 'z' + 1)).ToArray());
+                spawnEntity.Globalname = $"mapmodifiers_spawnpointmarker_{randomString}";
                 spawnEntity.Collision.CollisionGroup = (byte)CollisionGroup.COLLISION_GROUP_NONE;
                 spawnEntity.Collision.CollisionAttribute.CollisionGroup = (byte)CollisionGroup.COLLISION_GROUP_NONE;
                 spawnEntity.AbsOrigin.X = spawnPoint.AbsOrigin.X;
@@ -55,10 +58,18 @@ namespace MapModifiers
                 spawnEntity.AbsRotation.Z = spawnPoint.AbsRotation.Z;
                 spawnEntity.DispatchSpawn();
                 spawnEntity.SetModel("models/props/cs_office/file_cabinet1.vmdl");
-                if (spawnPoint.DesignerName.Contains("counterterrorist"))
+                if (spawnPoint.DesignerName.Contains("counterterrorist")) {
+                    // CT spawn
                     spawnEntity.Render = Color.FromArgb(0, 0, 255);
-                else
+                    // if custom CT spawn
+                    if (spawnPoint.Globalname.Contains("mapmodifiers_spawnpoint_"))
+                        spawnEntity.Render = Color.FromArgb(4, 138, 255);
+                }else{
                     spawnEntity.Render = Color.FromArgb(255, 0, 0);
+                    // if custom T spawn
+                    if (spawnPoint.Globalname.Contains("mapmodifiers_spawnpoint_"))
+                        spawnEntity.Render = Color.FromArgb(255, 90, 0);
+                }
             }
             return count;
         }
