@@ -1,9 +1,9 @@
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Utils;
 
-namespace MapModifiersPlugin
+namespace MapModifiers
 {
-    public partial class MapModifiersPlugin : BasePlugin, IPluginConfig<PluginConfig>
+    public partial class MapModifiers : BasePlugin, IPluginConfig<PluginConfig>
     {
         private readonly List<string> _precacheModels = new List<string>
         {

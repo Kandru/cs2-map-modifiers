@@ -3,7 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using CounterStrikeSharp.API.Core;
 
-namespace MapModifiersPlugin
+namespace MapModifiers
 {
     public class MapConfigSpawnPoint
     {
@@ -31,7 +31,7 @@ namespace MapModifiersPlugin
         [JsonPropertyName("maps")] public Dictionary<string, MapConfig> MapConfigs { get; set; } = new Dictionary<string, MapConfig>();
     }
 
-    public partial class MapModifiersPlugin : BasePlugin, IPluginConfig<PluginConfig>
+    public partial class MapModifiers : BasePlugin, IPluginConfig<PluginConfig>
     {
         public PluginConfig Config { get; set; } = null!;
         private MapConfig[] _currentMapConfigs = Array.Empty<MapConfig>();

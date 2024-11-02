@@ -3,9 +3,9 @@ using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
 
-namespace MapModifiersPlugin
+namespace MapModifiers
 {
-    public partial class MapModifiersPlugin : BasePlugin, IPluginConfig<PluginConfig>
+    public partial class MapModifiers : BasePlugin, IPluginConfig<PluginConfig>
     {
         [ConsoleCommand("addspawn", "Allows to add new spawn points")]
         [RequiresPermissions("@mapmodifiers/addspawn")]

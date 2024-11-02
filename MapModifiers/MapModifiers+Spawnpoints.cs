@@ -3,9 +3,9 @@ using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
 using System.Drawing;
 
-namespace MapModifiersPlugin
+namespace MapModifiers
 {
-    public partial class MapModifiersPlugin : BasePlugin, IPluginConfig<PluginConfig>
+    public partial class MapModifiers : BasePlugin, IPluginConfig<PluginConfig>
     {
         private void OnMapStartSpawnPoints(string mapName, MapConfig mapConfig)
         {

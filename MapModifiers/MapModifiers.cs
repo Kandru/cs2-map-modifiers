@@ -1,9 +1,9 @@
 ﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 
-namespace MapModifiersPlugin
+namespace MapModifiers
 {
-    public partial class MapModifiersPlugin : BasePlugin, IPluginConfig<PluginConfig>
+    public partial class MapModifiers : BasePlugin, IPluginConfig<PluginConfig>
     {
         public override string ModuleName => "Map Modifiers Plugin";
         public override string ModuleAuthor => "Jon-Mailes Graeffe <mail@jonni.it> / Kalle <kalle@kandru.de>";
