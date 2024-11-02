@@ -44,6 +44,13 @@ namespace MapModifiers
                 count++;
                 var spawnPoint = entity.As<SpawnPoint>();
                 CDynamicProp spawnEntity = Utilities.CreateEntityByName<CDynamicProp>("prop_dynamic")!;
+                if (spawnPoint.AbsOrigin == null || spawnEntity.AbsOrigin == null
+                    || spawnPoint.AbsRotation == null || spawnEntity.AbsRotation == null
+                    || !spawnEntity.IsValid || !spawnPoint.IsValid)
+                {
+                    Console.WriteLine("[MapModifiersPlugin] ERROR: could not spawn entity");
+                    return 0;
+                }
                 // random string due to a problem when deleting entities and create them again with the same name
                 // they will not show up again
                 var randomString = new string(Enumerable.Range(0, 5).Select(_ => (char)new Random().Next('a', 'z' + 1)).ToArray());

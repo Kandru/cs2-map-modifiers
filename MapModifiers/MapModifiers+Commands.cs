@@ -12,7 +12,7 @@ namespace MapModifiers
         [CommandHelper(whoCanExecute:CommandUsage.CLIENT_ONLY, minArgs:1, usage:"[ct/t]")]
         public void CommandAddSpawn(CCSPlayerController? player, CommandInfo command)
         {
-            if (player == null || !player.PlayerPawn.IsValid) return;
+            if (player == null || !player.PlayerPawn.IsValid || player.PlayerPawn.Value == null) return;
             var spawnType = command.GetArg(1);
             if (!spawnType.Equals("ct") && !spawnType.Equals("t"))
             {
