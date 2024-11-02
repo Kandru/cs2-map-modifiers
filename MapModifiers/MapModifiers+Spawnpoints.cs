@@ -70,14 +70,14 @@ namespace MapModifiers
                     // CT spawn
                     spawnEntity.Render = Color.FromArgb(0, 0, 255);
                     // if custom CT spawn
-                    if (spawnPoint.Globalname.Contains("mapmodifiers_spawnpoint_"))
+                    if (spawnPoint.Globalname != null && spawnPoint.Globalname.Contains("mapmodifiers_spawnpoint_"))
                         spawnEntity.Render = Color.FromArgb(4, 138, 255);
                 }
                 else
                 {
                     spawnEntity.Render = Color.FromArgb(255, 0, 0);
                     // if custom T spawn
-                    if (spawnPoint.Globalname.Contains("mapmodifiers_spawnpoint_"))
+                    if (spawnPoint.Globalname != null && spawnPoint.Globalname.Contains("mapmodifiers_spawnpoint_"))
                         spawnEntity.Render = Color.FromArgb(255, 90, 0);
                 }
             }
