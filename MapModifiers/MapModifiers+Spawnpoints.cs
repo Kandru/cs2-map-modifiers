@@ -277,5 +277,16 @@ namespace MapModifiers
             spawn.DispatchSpawn();
             Console.WriteLine("[MapModifiersPlugin] created spawn point for " + type + " at " + spawnPoint.Origin[0] + ", " + spawnPoint.Origin[1] + ", " + spawnPoint.Origin[2] + " with angle " + spawnPoint.Angle[0] + ", " + spawnPoint.Angle[1] + ", " + spawnPoint.Angle[2]);
         }
+
+        private void CountSpawnPoints()
+        {
+            var spawnEntities = Utilities.FindAllEntitiesByDesignerName<SpawnPoint>("info_player_").ToArray();
+            Console.WriteLine("[MapModifiersPlugin] Counted " + spawnEntities.Length + " spawn points");
+            if (spawnEntities.Length < Server.MaxPlayers)
+            {
+                Console.WriteLine($"[MapModifiersPlugin] WARNING: Only {spawnEntities.Length} spawn points for {Server.MaxPlayers} players!");
+                SendGlobalChatMessage($"[MapModifiersPlugin] WARNING: Only {spawnEntities.Length} spawn points for {Server.MaxPlayers} players!");
+            }
+        }
     }
 }

@@ -64,7 +64,10 @@ namespace MapModifiers
 
         private HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
         {
+            // create spawn points if necessary
             CreateSpawnPoints();
+            // check if we have enough spawn points
+            CountSpawnPoints();
             // continue with original event
             return HookResult.Continue;
         }
