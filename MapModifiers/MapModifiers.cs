@@ -18,6 +18,7 @@ namespace MapModifiers
             // register listeners
             RegisterEventHandler<EventRoundStart>(OnRoundStart);
             RegisterListener<Listeners.OnMapStart>(OnMapStart);
+            RegisterListener<Listeners.OnMapEnd>(OnMapEnd);
             RegisterListener<Listeners.OnServerPrecacheResources>(OnServerPrecacheResources);
             // print message if hot reload
             if (hotReload)
@@ -46,13 +47,16 @@ namespace MapModifiers
             {
                 // spawn points
                 OnMapStartSpawnPoints(mapName.ToLower(), mapConfig);
-                // server commands
-                foreach (var command in mapConfig.ServerCommands)
+                // delay execution to allow server to load configurations first
+                AddTimer(2.0f, () =>
                 {
-                    Server.ExecuteCommand(command);
-
-                    Console.WriteLine("[MapModifiersPlugin] Executed server commands for this map!");
-                }
+                    // server commands
+                    foreach (var command in mapConfig.ServerCommands)
+                    {
+                        Server.ExecuteCommand(command);
+                        Console.WriteLine($"[MapModifiersPlugin] Executed server command: {command}");
+                    }
+                });
 
                 // client commands
                 if (mapConfig.ClientCommands.Count > 0)
@@ -60,6 +64,11 @@ namespace MapModifiers
                     RegisterListener<Listeners.OnClientPutInServer>(OnClientPutInServer);
                 }
             }
+        }
+
+        private void OnMapEnd()
+        {
+            RemoveListener<Listeners.OnClientPutInServer>(OnClientPutInServer);
         }
 
         private HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
@@ -74,14 +83,14 @@ namespace MapModifiers
 
         private void OnClientPutInServer(int playerSlot)
         {
-            //TODO too early?
-            var playerController = Utilities.GetPlayerFromSlot(playerSlot);
-            if (playerController == null) return;
-            foreach (var mapConfig in _currentMapConfigs)
+            CCSPlayerController? player = Utilities.GetPlayerFromSlot(playerSlot);
+            if (player == null) return;
+            foreach (MapConfig mapConfig in _currentMapConfigs)
             {
                 foreach (string command in mapConfig.ClientCommands)
                 {
-                    playerController.ExecuteClientCommand(command);
+                    player.ExecuteClientCommand(command);
+                    Console.WriteLine($"[MapModifiersPlugin] Executed client command: {command} for {player.PlayerName}");
                 }
             }
         }
