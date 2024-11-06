@@ -19,11 +19,10 @@ namespace MapModifiers
         [JsonPropertyName("client_cmds")] public List<string> ClientCommands { get; set; } = new();
 
         // spawns
-        [JsonPropertyName("remove_original_spawns")]
-        public bool DeleteOriginalSpawns { get; set; } = false;
-        // ReSharper disable once InconsistentNaming
+        [JsonPropertyName("remove_original_spawns")] public bool DeleteOriginalSpawns { get; set; } = false;
+        [JsonPropertyName("statck_original_t_spawns")] public bool StackOriginalTSpawns { get; set; } = false;
+        [JsonPropertyName("statck_original_ct_spawns")] public bool StackOriginalCTSpawns { get; set; } = false;
         [JsonPropertyName("t_spawns")] public List<MapConfigSpawnPoint> TSpawns { get; set; } = new();
-        // ReSharper disable once InconsistentNaming
         [JsonPropertyName("ct_spawns")] public List<MapConfigSpawnPoint> CTSpawns { get; set; } = new();
     }
 
