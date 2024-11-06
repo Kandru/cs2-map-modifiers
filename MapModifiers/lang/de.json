@@ -1,0 +1,8 @@
+{
+    "core.hotreload": "[MapModifiers] Neu geladen! Änderungen werden in der nächsten Karte wirksam!",
+    "core.unload": "[MapModifiers] Plugin entladen!",
+    "core.defaultconfig": "[MapModifiers] Keine kartenspezifische Konfiguration für {mapName} gefunden, Standardkonfiguration wird verwendet!",
+    "core.noconfig": "[MapModifiers] Keine kartenspezifische Konfiguration für {mapName} oder Standardkonfiguration gefunden. Überspringen!",
+    "core.foundconfig": "[MapModifiers] {count} passende kartenspezifische Konfigurationen für {mapName} gefunden!",
+    "core.configinitialized": "[MapModifiers] Konfiguration initialisiert!"
+}

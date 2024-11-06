@@ -27,21 +27,22 @@ namespace MapModifiers
                 _currentMap = Server.MapName;
                 // initialize configuration
                 InitializeConfig(_currentMap);
-                Console.WriteLine("[MapModifiers] Hot reload detected, restart map for all changes to take effect!");
+                Console.WriteLine(Localizer["core.hotreload"]);
             }
         }
 
         public override void Unload(bool hotReload)
         {
-            Console.WriteLine("[MapModifiersPlugin] Unloaded Plugin!");
+            Console.WriteLine(Localizer["core.unload"]);
         }
 
         private void OnMapStart(string mapName)
         {
             // set map name
             _currentMap = mapName.ToLower();
-            // initialize configuration
-            InitializeConfig(mapName.ToLower());
+            // update configuration
+            LoadConfig();
+            SaveConfig();
             // iterate through all configurations
             foreach (MapConfig mapConfig in _currentMapConfigs)
             {
