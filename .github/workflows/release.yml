@@ -64,6 +64,7 @@ jobs:
         echo "release_notes=$release_notes" >> $GITHUB_ENV
 
     - name: Create GitHub release
+      id: create_release
       if: env.new_version == 'true'
       uses: actions/create-release@v1
       env:
