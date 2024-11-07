@@ -16,23 +16,24 @@ namespace MapModifiers
             // initialize configuration
             LoadConfig();
             // register listeners
-            RegisterEventHandler<EventRoundStart>(OnRoundStart);
+            RegisterSpawnPointsListeners();
+            RegisterClientCommandsListeners();
             RegisterListener<Listeners.OnMapStart>(OnMapStart);
-            RegisterListener<Listeners.OnMapEnd>(OnMapEnd);
             RegisterListener<Listeners.OnServerPrecacheResources>(OnServerPrecacheResources);
             // print message if hot reload
             if (hotReload)
             {
-                // set current map
-                _currentMap = Server.MapName;
                 // initialize configuration
                 InitializeConfig(_currentMap);
+                // set current map
+                _currentMap = Server.MapName;
                 Console.WriteLine(Localizer["core.hotreload"]);
             }
         }
 
         public override void Unload(bool hotReload)
         {
+            RemoveClientCommandsListeners();
             Console.WriteLine(Localizer["core.unload"]);
         }
 
@@ -42,58 +43,11 @@ namespace MapModifiers
             _currentMap = mapName.ToLower();
             // update configuration
             LoadConfig();
+            InitializeConfig(_currentMap);
             SaveConfig();
-            // iterate through all configurations
-            foreach (MapConfig mapConfig in _currentMapConfigs)
-            {
-                // spawn points
-                OnMapStartSpawnPoints(mapName.ToLower(), mapConfig);
-                // delay execution to allow server to load configurations first
-                AddTimer(2.0f, () =>
-                {
-                    // server commands
-                    foreach (var command in mapConfig.ServerCommands)
-                    {
-                        Server.ExecuteCommand(command);
-                        Console.WriteLine($"[MapModifiersPlugin] Executed server command: {command}");
-                    }
-                });
-
-                // client commands
-                if (mapConfig.ClientCommands.Count > 0)
-                {
-                    RegisterListener<Listeners.OnClientPutInServer>(OnClientPutInServer);
-                }
-            }
-        }
-
-        private void OnMapEnd()
-        {
-            RemoveListener<Listeners.OnClientPutInServer>(OnClientPutInServer);
-        }
-
-        private HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
-        {
-            // create spawn points if necessary
-            CreateSpawnPoints();
-            // check if we have enough spawn points
-            CountSpawnPoints();
-            // continue with original event
-            return HookResult.Continue;
-        }
-
-        private void OnClientPutInServer(int playerSlot)
-        {
-            CCSPlayerController? player = Utilities.GetPlayerFromSlot(playerSlot);
-            if (player == null) return;
-            foreach (MapConfig mapConfig in _currentMapConfigs)
-            {
-                foreach (string command in mapConfig.ClientCommands)
-                {
-                    player.ExecuteClientCommand(command);
-                    Console.WriteLine($"[MapModifiersPlugin] Executed client command: {command} for {player.PlayerName}");
-                }
-            }
+            // inform plugins
+            ClientCommandsOnMapStart(mapName);
+            ServerCommandsOnMapStart(mapName);
         }
     }
 }

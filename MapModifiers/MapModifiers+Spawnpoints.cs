@@ -8,33 +8,76 @@ namespace MapModifiers
 {
     public partial class MapModifiers : BasePlugin, IPluginConfig<PluginConfig>
     {
-        private void OnMapStartSpawnPoints(string mapName, MapConfig mapConfig)
+        private void RegisterSpawnPointsListeners()
         {
-            // TODO: does not work on map start. Should run on round start instead
+            RegisterEventHandler<EventRoundStart>(SpawnPointsOnRoundStart);
+        }
+
+        private HookResult SpawnPointsOnRoundStart(EventRoundStart @event, GameEventInfo info)
+        {
+            // TODO: does not work on map start and crashes servers (at least on windows)
             Console.WriteLine(Localizer["spawnpoints.onmapstart"].Value
-                .Replace("{mapName}", mapName));
-            // try to delete spawn points
-            if (mapConfig.TSpawns.Count > 0 || mapConfig.CTSpawns.Count > 0)
+                           .Replace("{mapName}", _currentMap));
+            foreach (MapConfig mapConfig in _currentMapConfigs)
             {
-                if (mapConfig.DeleteOriginalSpawns)
+                // try to delete spawn points
+                if (mapConfig.TSpawns.Count > 0 || mapConfig.CTSpawns.Count > 0)
                 {
-                    // sanity checks
-                    if (mapConfig.TSpawns.Count == 0)
+                    if (mapConfig.DeleteOriginalSpawns)
                     {
-                        Console.WriteLine(Localizer["spawnpoints.error.nospawns"].Value
-                            .Replace("{side}", "T")
-                            .Replace("{mapName}", mapName));
-                    }
-                    else if (mapConfig.CTSpawns.Count == 0)
-                    {
-                        Console.WriteLine("[MapModifiersPlugin] WARNING: Map " + mapName + " has no configured spawns for CT, but according to configuration the original spawns shall be removed.");
-                    }
-                    else
-                    {
-                        RemoveSpawnPoints();
+                        // sanity checks
+                        if (mapConfig.TSpawns.Count == 0)
+                        {
+                            Console.WriteLine(Localizer["spawnpoints.error.nospawns"].Value
+                                .Replace("{side}", "T")
+                                .Replace("{mapName}", _currentMap));
+                        }
+                        else if (mapConfig.CTSpawns.Count == 0)
+                        {
+                            Console.WriteLine(Localizer["spawnpoints.error.nospawns"].Value
+                                .Replace("{side}", "CT")
+                                .Replace("{mapName}", _currentMap));
+                        }
+                        else
+                        {
+                            RemoveSpawnPoints();
+                        }
                     }
                 }
+                // add custom spawn points
+                Console.WriteLine(Localizer["spawnpoints.createspawnpoints"].Value
+                    .Replace("{mapName}", _currentMap));
+                foreach (var spawnConfig in mapConfig.TSpawns)
+                {
+                    CreateSpawnPoint("t", new MapConfigSpawnPoint
+                    {
+                        Origin = [spawnConfig.Origin[0], spawnConfig.Origin[1], spawnConfig.Origin[2]],
+                        Angle = [spawnConfig.Angle[0], spawnConfig.Angle[1], spawnConfig.Angle[2]]
+                    });
+                }
+
+                foreach (var spawnConfig in mapConfig.CTSpawns)
+                {
+                    CreateSpawnPoint("ct", new MapConfigSpawnPoint
+                    {
+                        Origin = [spawnConfig.Origin[0], spawnConfig.Origin[1], spawnConfig.Origin[2]],
+                        Angle = [spawnConfig.Angle[0], spawnConfig.Angle[1], spawnConfig.Angle[2]]
+                    });
+                }
             }
+            // count all spawn points
+            var spawnEntities = Utilities.FindAllEntitiesByDesignerName<SpawnPoint>("info_player_").ToArray();
+            Console.WriteLine(Localizer["spawnpoints.count"].Value
+                .Replace("{count}", spawnEntities.Length.ToString()));
+            if (spawnEntities.Length < Server.MaxPlayers)
+            {
+                var message = Localizer["spawnpoints.count.warning"].Value
+                    .Replace("{count}", spawnEntities.Length.ToString())
+                    .Replace("{players}", Server.MaxPlayers.ToString());
+                Console.WriteLine(message);
+                SendGlobalChatMessage(message);
+            }
+            return HookResult.Continue;
         }
 
         private SpawnPoint? GetNearestSpawnPoint(Vector origin, float maxDistance = 200)
@@ -191,33 +234,6 @@ namespace MapModifiers
             return false;
         }
 
-        private void CreateSpawnPoints()
-        {
-            Console.WriteLine(Localizer["spawnpoints.createspawnpoints"].Value
-                .Replace("{mapName}", _currentMap));
-            // add spawns corresponding to the configuration
-            foreach (var mapConfig in _currentMapConfigs)
-            {
-                foreach (var spawnConfig in mapConfig.TSpawns)
-                {
-                    CreateSpawnPoint("t", new MapConfigSpawnPoint
-                    {
-                        Origin = [spawnConfig.Origin[0], spawnConfig.Origin[1], spawnConfig.Origin[2]],
-                        Angle = [spawnConfig.Angle[0], spawnConfig.Angle[1], spawnConfig.Angle[2]]
-                    });
-                }
-
-                foreach (var spawnConfig in mapConfig.CTSpawns)
-                {
-                    CreateSpawnPoint("ct", new MapConfigSpawnPoint
-                    {
-                        Origin = [spawnConfig.Origin[0], spawnConfig.Origin[1], spawnConfig.Origin[2]],
-                        Angle = [spawnConfig.Angle[0], spawnConfig.Angle[1], spawnConfig.Angle[2]]
-                    });
-                }
-            }
-        }
-
         private int RemoveSpawnPoints(bool removeCustom = false)
         {
             var spawnEntities = Utilities.FindAllEntitiesByDesignerName<SpawnPoint>("info_player_").ToArray();
@@ -281,20 +297,6 @@ namespace MapModifiers
                 .Replace("{type}", type)
                 .Replace("{origin}", $"{spawnPoint.Origin[0]} {spawnPoint.Origin[1]} {spawnPoint.Origin[2]}")
                 .Replace("{angle}", $"{spawnPoint.Angle[0]} {spawnPoint.Angle[1]} {spawnPoint.Angle[2]}"));
-        }
-
-        private void CountSpawnPoints()
-        {
-            var spawnEntities = Utilities.FindAllEntitiesByDesignerName<SpawnPoint>("info_player_").ToArray();
-            Console.WriteLine(Localizer["spawnpoints.count"]);
-            if (spawnEntities.Length < Server.MaxPlayers)
-            {
-                var message = Localizer["spawnpoints.count.wawrning"].Value
-                    .Replace("{count}", spawnEntities.Length.ToString())
-                    .Replace("{players}", Server.MaxPlayers.ToString());
-                Console.WriteLine(message);
-                SendGlobalChatMessage(message);
-            }
         }
     }
 }

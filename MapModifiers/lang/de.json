@@ -15,5 +15,7 @@
     "spawnpoints.marker.changed": "[MapModifiers] einzelnen Spawnpunktmarker geändert",
     "spawnpoints.marker.noentity": "[MapModifiers] FEHLER: Konnte Entität nicht erstellen",
     "spawnpoints.marker.exists": "[MapModifiers] WARNUNG: Spawnpunktmarker existiert bereits an dieser Position. Überspringe!",
-    "spawnpoints.onmapstart": "[MapModifiers] Überprüfe Spawnpunkte für Karte {mapName}"
+    "spawnpoints.onmapstart": "[MapModifiers] Überprüfe Spawnpunkte für Karte {mapName}",
+    "clientcommands.execute": "[MapModifiers] Client-Befehl ausgeführt: {command} für {player}",
+    "servercommands.execute": "[MapModifiersPlugin] Server-Befehl ausgeführt: {command} für Karte {mapName}"
 }
