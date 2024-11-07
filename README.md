@@ -140,7 +140,7 @@ Build debug files (to use on a development game server)
 Build release files (to use on a production game server)
 
 ```bash
-  dotnet release
+  dotnet publish
 ```
 
 ## FAQ
