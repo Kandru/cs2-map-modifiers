@@ -47,15 +47,14 @@ jobs:
       if: env.new_version == 'true'
       run: dotnet publish -c Release
 
-    - name: Create release directory
+    - name: Rename release directory
       if: env.new_version == 'true'
       run: |
-        mkdir -p MapModifiers
-        cp -r bin/Release/net8.0/publish/* MapModifiers/
+        mv /home/runner/work/cs2-map-modifiers/cs2-map-modifiers/MapModifiers/bin/Release/net8.0/publish/ /home/runner/work/cs2-map-modifiers/cs2-map-modifiers/MapModifiers/bin/Release/net8.0/MapModifiers/
 
     - name: Zip release
       if: env.new_version == 'true'
-      run: zip -r cs2-map-modifiers-${{ env.version }}.zip MapModifiers
+      run: zip -r /home/runner/work/cs2-map-modifiers-${{ env.version }}.zip /home/runner/work/cs2-map-modifiers/cs2-map-modifiers/MapModifiers/bin/Release/net8.0/MapModifiers
 
     - name: Get release notes
       if: env.new_version == 'true'
@@ -79,6 +78,6 @@ jobs:
       uses: actions/upload-release-asset@v1
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./cs2-map-modifiers-${{ env.version }}.zip
+        asset_path: /home/runner/work/cs2-map-modifiers-${{ env.version }}.zip
         asset_name: cs2-map-modifiers-${{ env.version }}.zip
         asset_content_type: application/zip
