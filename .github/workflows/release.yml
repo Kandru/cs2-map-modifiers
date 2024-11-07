@@ -54,7 +54,7 @@ jobs:
 
     - name: Zip release
       if: env.new_version == 'true'
-      run: zip -r /home/runner/work/cs2-map-modifiers-${{ env.version }}.zip /home/runner/work/cs2-map-modifiers/cs2-map-modifiers/MapModifiers/bin/Release/net8.0/MapModifiers
+      run: cd /home/runner/work/cs2-map-modifiers/cs2-map-modifiers/MapModifiers/bin/Release/net8.0 && zip -r /home/runner/work/cs2-map-modifiers-${{ env.version }}.zip MapModifiers
 
     - name: Get release notes
       if: env.new_version == 'true'
