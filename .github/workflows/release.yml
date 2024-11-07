@@ -25,7 +25,7 @@ jobs:
     - name: Get current version from MapModifiers.cs
       id: get_version
       run: |
-        version=$(grep -oP '(?<=ModuleVersion = ")[^"]*' MapModifiers.cs)
+        version=$(grep -oP '(?<=ModuleVersion => ")[^"]*' MapModifiers/MapModifiers.cs)
         echo "version=$version" >> $GITHUB_ENV
 
     - name: Get latest release version
