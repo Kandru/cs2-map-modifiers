@@ -1,0 +1,84 @@
+name: Create Release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Install dependencies
+      run: dotnet restore
+
+    - name: Get current version from MapModifiers.cs
+      id: get_version
+      run: |
+        version=$(grep -oP '(?<=ModuleVersion = ")[^"]*' MapModifiers.cs)
+        echo "version=$version" >> $GITHUB_ENV
+
+    - name: Get latest release version
+      id: get_latest_release
+      run: |
+        latest_release=$(curl -s https://api.github.com/repos/${{ github.repository }}/releases/latest | jq -r .tag_name)
+        echo "latest_release=$latest_release" >> $GITHUB_ENV
+
+    - name: Compare versions
+      id: compare_versions
+      run: |
+        if [ "${{ env.version }}" != "${{ env.latest_release }}" ]; then
+          echo "new_version=true" >> $GITHUB_ENV
+        else
+          echo "new_version=false" >> $GITHUB_ENV
+        fi
+
+    - name: Build project
+      if: env.new_version == 'true'
+      run: dotnet publish -c Release
+
+    - name: Create release directory
+      if: env.new_version == 'true'
+      run: |
+        mkdir -p MapModifiers
+        cp -r bin/Release/net8.0/publish/* MapModifiers/
+
+    - name: Zip release
+      if: env.new_version == 'true'
+      run: zip -r cs2-map-modifiers-${{ env.version }}.zip MapModifiers
+
+    - name: Get release notes
+      if: env.new_version == 'true'
+      id: get_release_notes
+      run: |
+        release_notes=$(git log --pretty=format:"%h - %s" $(git describe --tags --abbrev=0)..HEAD)
+        echo "release_notes=$release_notes" >> $GITHUB_ENV
+
+    - name: Create GitHub release
+      if: env.new_version == 'true'
+      uses: actions/create-release@v1
+      with:
+        tag_name: ${{ env.version }}
+        release_name: ${{ env.version }}
+        body: ${{ env.release_notes }}
+        draft: false
+        prerelease: false
+
+    - name: Upload release asset
+      if: env.new_version == 'true'
+      uses: actions/upload-release-asset@v1
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./cs2-map-modifiers-${{ env.version }}.zip
+        asset_name: cs2-map-modifiers-${{ env.version }}.zip
+        asset_content_type: application/zip
