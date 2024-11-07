@@ -4,5 +4,16 @@
     "core.defaultconfig": "[MapModifiers] Keine kartenspezifische Konfiguration für {mapName} gefunden, Standardkonfiguration wird verwendet!",
     "core.noconfig": "[MapModifiers] Keine kartenspezifische Konfiguration für {mapName} oder Standardkonfiguration gefunden. Überspringen!",
     "core.foundconfig": "[MapModifiers] {count} passende kartenspezifische Konfigurationen für {mapName} gefunden!",
-    "core.configinitialized": "[MapModifiers] Konfiguration initialisiert!"
+    "core.configinitialized": "[MapModifiers] Konfiguration initialisiert!",
+    "spawnpoints.createspawnpoints": "[MapModifiers] Erstelle eigene Spawnpunkte für {mapName}",
+    "spawnpoints.error.exists": "[MapModifiers] WARNUNG: Spawnpunkt existiert bereits an dieser Position. Überspringe!",
+    "spawnpoints.error.noentity": "[MapModifiers] FEHLER: Konnte Entität nicht erstellen",
+    "spawnpoints.error.nospawns": "[MapModifiers] WARNUNG: {mapName} hat keine konfigurierten Spawnpunkte für {type}, aber gemäß der Konfiguration sollen die Originalspawnpunkte entfernt werden.",
+    "spawnpoints.created": "[MapModifiers] Spawnpunkt für {type} bei {origin} mit Winkel {angle} erstellt",
+    "spawnpoints.count": "[MapModifiers] {count} Spawnpunkte gezählt",
+    "spawnpoints.count.warning": "[MapModifiers] WARNUNG: Nur {count} Spawnpunkte für {players} Spieler!",
+    "spawnpoints.marker.changed": "[MapModifiers] einzelnen Spawnpunktmarker geändert",
+    "spawnpoints.marker.noentity": "[MapModifiers] FEHLER: Konnte Entität nicht erstellen",
+    "spawnpoints.marker.exists": "[MapModifiers] WARNUNG: Spawnpunktmarker existiert bereits an dieser Position. Überspringe!",
+    "spawnpoints.onmapstart": "[MapModifiers] Überprüfe Spawnpunkte für Karte {mapName}"
 }

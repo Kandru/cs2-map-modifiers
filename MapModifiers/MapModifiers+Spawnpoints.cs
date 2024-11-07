@@ -11,7 +11,8 @@ namespace MapModifiers
         private void OnMapStartSpawnPoints(string mapName, MapConfig mapConfig)
         {
             // TODO: does not work on map start. Should run on round start instead
-            Console.WriteLine("[MapModifiersPlugin] Modifying spawn points for map " + mapName);
+            Console.WriteLine(Localizer["spawnpoints.onmapstart"].Value
+                .Replace("{mapName}", mapName));
             // try to delete spawn points
             if (mapConfig.TSpawns.Count > 0 || mapConfig.CTSpawns.Count > 0)
             {
@@ -20,13 +21,13 @@ namespace MapModifiers
                     // sanity checks
                     if (mapConfig.TSpawns.Count == 0)
                     {
-                        Console.WriteLine("[MapModifiersPlugin] WARNING: Map " + mapName + " has no configured spawns for CT, but according to configuration the original spawns shall be removed.");
-                        Console.WriteLine("[MapModifiersPlugin] WARNING: This would result in the game having no spawns at all, which will let the server crash. That's why the original spawns are kept and the request to remove original spawns is just ignored!");
+                        Console.WriteLine(Localizer["spawnpoints.error.nospawns"].Value
+                            .Replace("{side}", "T")
+                            .Replace("{mapName}", mapName));
                     }
                     else if (mapConfig.CTSpawns.Count == 0)
                     {
                         Console.WriteLine("[MapModifiersPlugin] WARNING: Map " + mapName + " has no configured spawns for CT, but according to configuration the original spawns shall be removed.");
-                        Console.WriteLine("[MapModifiersPlugin] WARNING: This would result in the game having no spawns at all, which will let the server crash. That's why the original spawns are kept and the request to remove original spawns is just ignored!");
                     }
                     else
                     {
@@ -91,7 +92,7 @@ namespace MapModifiers
                     Math.Round(x.AbsOrigin.Y, 3) == Math.Round(spawnPointEntity.AbsOrigin.Y, 3) &&
                     Math.Round(x.AbsOrigin.Z, 3) == Math.Round(spawnPointEntity.AbsOrigin.Z, 3)))
                 {
-                    Console.WriteLine("[MapModifiersPlugin] WARNING: spawn point marker already exists at that position. Skipping!");
+                    Console.WriteLine(Localizer["spawnpoints.marker.exists"]);
                     continue;
                 }
                 CDynamicProp spawnMarkerEntity = Utilities.CreateEntityByName<CDynamicProp>("prop_dynamic")!;
@@ -99,7 +100,7 @@ namespace MapModifiers
                     || spawnPointEntity.AbsRotation == null || spawnMarkerEntity.AbsRotation == null
                     || !spawnMarkerEntity.IsValid || !spawnPointEntity.IsValid)
                 {
-                    Console.WriteLine("[MapModifiersPlugin] ERROR: could not spawn entity");
+                    Console.WriteLine(Localizer["spawnpoints.marker.noentity"]);
                     return 0;
                 }
                 // random string due to a problem when deleting entities and create them again with the same name
@@ -184,7 +185,7 @@ namespace MapModifiers
                     spawnMarkerEntity.Render = Color.FromArgb(color[0], color[1], color[2], color[3]);
                 }
                 spawnMarkerEntity.DispatchSpawn();
-                Console.WriteLine("[MapModifiersPlugin] changed single spawn point marker");
+                Console.WriteLine(Localizer["spawnpoints.marker.changed"]);
                 return true;
             }
             return false;
@@ -192,7 +193,8 @@ namespace MapModifiers
 
         private void CreateSpawnPoints()
         {
-            Console.WriteLine("[MapModifiersPlugin] creating custom spawn points");
+            Console.WriteLine(Localizer["spawnpoints.createspawnpoints"].Value
+                .Replace("{mapName}", _currentMap));
             // add spawns corresponding to the configuration
             foreach (var mapConfig in _currentMapConfigs)
             {
@@ -248,7 +250,7 @@ namespace MapModifiers
                 Math.Round(x.AbsOrigin.Y, 3) == Math.Round(spawnPoint.Origin[1], 3) &&
                 Math.Round(x.AbsOrigin.Z, 3) == Math.Round(spawnPoint.Origin[2], 3)))
             {
-                Console.WriteLine("[MapModifiersPlugin] WARNING: spawn point already exists at that position. Skipping!");
+                Console.WriteLine(Localizer["spawnpoints.error.exists"]);
                 return;
             }
             SpawnPoint spawn;
@@ -262,7 +264,7 @@ namespace MapModifiers
             }
             if (spawn == null || spawn.AbsOrigin == null || spawn.AbsRotation == null || !spawn.IsValid)
             {
-                Console.WriteLine("[MapModifiersPlugin] ERROR: could not spawn entity");
+                Console.WriteLine(Localizer["spawnpoints.error.noentity"]);
                 return;
             }
             // set attributes
@@ -275,17 +277,23 @@ namespace MapModifiers
             spawn.AbsRotation.Z = spawnPoint.Angle[2];
             // spawn it
             spawn.DispatchSpawn();
-            Console.WriteLine("[MapModifiersPlugin] created spawn point for " + type + " at " + spawnPoint.Origin[0] + ", " + spawnPoint.Origin[1] + ", " + spawnPoint.Origin[2] + " with angle " + spawnPoint.Angle[0] + ", " + spawnPoint.Angle[1] + ", " + spawnPoint.Angle[2]);
+            Console.WriteLine(Localizer["spawnpoints.created"].Value
+                .Replace("{type}", type)
+                .Replace("{origin}", $"{spawnPoint.Origin[0]} {spawnPoint.Origin[1]} {spawnPoint.Origin[2]}")
+                .Replace("{angle}", $"{spawnPoint.Angle[0]} {spawnPoint.Angle[1]} {spawnPoint.Angle[2]}"));
         }
 
         private void CountSpawnPoints()
         {
             var spawnEntities = Utilities.FindAllEntitiesByDesignerName<SpawnPoint>("info_player_").ToArray();
-            Console.WriteLine("[MapModifiersPlugin] Counted " + spawnEntities.Length + " spawn points");
+            Console.WriteLine(Localizer["spawnpoints.count"]);
             if (spawnEntities.Length < Server.MaxPlayers)
             {
-                Console.WriteLine($"[MapModifiersPlugin] WARNING: Only {spawnEntities.Length} spawn points for {Server.MaxPlayers} players!");
-                SendGlobalChatMessage($"[MapModifiersPlugin] WARNING: Only {spawnEntities.Length} spawn points for {Server.MaxPlayers} players!");
+                var message = Localizer["spawnpoints.count.wawrning"].Value
+                    .Replace("{count}", spawnEntities.Length.ToString())
+                    .Replace("{players}", Server.MaxPlayers.ToString());
+                Console.WriteLine(message);
+                SendGlobalChatMessage(message);
             }
         }
     }

@@ -4,5 +4,16 @@
     "core.defaultconfig": "[MapModifiers] Found no map-specific configuration for {mapName}, using default one!",
     "core.noconfig": "[MapModifiers] No map-specific configuration for {mapName} or default one found. Skipping!",
     "core.foundconfig": "[MapModifiers] Found {count} matching map-specific configurations for {mapName}!",
-    "core.configinitialized": "[MapModifiers] Configuration initialized!"
+    "core.configinitialized": "[MapModifiers] Configuration initialized!",
+    "spawnpoints.createspawnpoints": "[MapModifiers] Creating custom spawnpoints for {mapName}",
+    "spawnpoints.error.exists": "[MapModifiers] WARNING: spawn point already exists at that position. Skipping!",
+    "spawnpoints.error.noentity": "[MapModifiers] ERROR: could not spawn entity",
+    "spawnpoints.error.nospawns": "[MapModifiers] WARNING: {mapName} has no configured spawns for {type}, but according to configuration the original spawns shall be removed.",
+    "spawnpoints.created": "[MapModifiers] created spawn point for {type} at {origin} with angle {angle}",
+    "spawnpoints.count": "[MapModifiers] Counted {count} spawn points",
+    "spawnpoints.count.warning": "[MapModifiers] WARNING: Only {count} spawn points for {players} players!",
+    "spawnpoints.marker.changed": "[MapModifiers] changed single spawn point marker",
+    "spawnpoints.marker.noentity": "[MapModifiers] ERROR: could not spawn entity",
+    "spawnpoints.marker.exists": "[MapModifiers] WARNING: spawn point marker already exists at that position. Skipping!",
+    "spawnpoints.onmapstart": "[MapModifiers] Checking spawn points for map {mapName}"
 }
