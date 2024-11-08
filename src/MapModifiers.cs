@@ -7,7 +7,7 @@ namespace MapModifiers
     {
         public override string ModuleName => "Map Modifiers Plugin";
         public override string ModuleAuthor => "Jon-Mailes Graeffe <mail@jonni.it> / Kalle <kalle@kandru.de>";
-        public override string ModuleVersion => "0.0.11";
+        public override string ModuleVersion => "0.0.12";
 
         private string _currentMap = "";
 
