@@ -25,7 +25,7 @@ namespace MapModifiers
             {
                 if (mapConfig.MovetoSpectatorOnJoin)
                 {
-                    AddTimer(5f, () =>
+                    AddTimer(2f, () =>
                     {
                         CCSPlayerController? tmpPlayer = new(player.Handle);
                         if (tmpPlayer == null) return;
