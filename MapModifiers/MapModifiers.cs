@@ -18,6 +18,7 @@ namespace MapModifiers
             // register listeners
             RegisterSpawnPointsListeners();
             RegisterClientCommandsListeners();
+            RegisterSpectatorOnJoinListeners();
             RegisterListener<Listeners.OnMapStart>(OnMapStart);
             RegisterListener<Listeners.OnServerPrecacheResources>(OnServerPrecacheResources);
             // print message if hot reload
@@ -34,6 +35,7 @@ namespace MapModifiers
         public override void Unload(bool hotReload)
         {
             RemoveClientCommandsListeners();
+            RemoveSpectatorOnJoinListeners();
             Console.WriteLine(Localizer["core.unload"]);
         }
 

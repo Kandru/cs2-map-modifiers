@@ -19,6 +19,9 @@ namespace MapModifiers
         [JsonPropertyName("server_cmds")] public List<string> ServerCommands { get; set; } = new();
         [JsonPropertyName("client_cmds")] public List<string> ClientCommands { get; set; } = new();
 
+        // spectator
+        [JsonPropertyName("move_to_spectator_on_join")] public bool MovetoSpectatorOnJoin { get; set; } = true;
+
         // spawns
         [JsonPropertyName("remove_original_spawns")] public bool DeleteOriginalSpawns { get; set; } = false;
         [JsonPropertyName("statck_original_t_spawns")] public bool StackOriginalTSpawns { get; set; } = false;
