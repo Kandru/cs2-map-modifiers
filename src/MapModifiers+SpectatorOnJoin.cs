@@ -18,9 +18,8 @@ namespace MapModifiers
             {
                 if (mapConfig.MovetoSpectatorOnJoin)
                 {
-                    AddTimer(0.3f, () =>
+                    AddTimer(1.0f, () =>
                     {
-                        Console.WriteLine($"Moving {player.PlayerName} to spectator team");
                         player.ChangeTeam(CsTeam.Spectator);
                     });
                 }
