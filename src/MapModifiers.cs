@@ -34,7 +34,6 @@ namespace MapModifiers
         public override void Unload(bool hotReload)
         {
             RemoveClientCommandsListeners();
-            RemoveSpectatorOnJoinListeners();
             Console.WriteLine(Localizer["core.unload"]);
         }
 

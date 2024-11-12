@@ -1,4 +1,3 @@
-using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Utils;
 
@@ -8,33 +7,25 @@ namespace MapModifiers
     {
         private void RegisterSpectatorOnJoinListeners()
         {
-            RegisterListener<Listeners.OnClientPutInServer>(SpectatorOnJoinOnClientPutInServer);
+            RegisterEventHandler<EventPlayerActivate>(SpectatorOnJoinOnPlayerActivate);
         }
 
-        private void RemoveSpectatorOnJoinListeners()
+        private HookResult SpectatorOnJoinOnPlayerActivate(EventPlayerActivate @event, GameEventInfo info)
         {
-            RemoveListener<Listeners.OnClientPutInServer>(SpectatorOnJoinOnClientPutInServer);
-        }
-
-        private void SpectatorOnJoinOnClientPutInServer(int playerSlot)
-        {
-            bool hasSpectatorOnJoinEnabled = false;
-            CCSPlayerController? player = Utilities.GetPlayerFromSlot(playerSlot);
-            if (player == null || player.IsBot) return;
+            CCSPlayerController? player = @event.Userid;
+            if (player == null || player.IsBot) return HookResult.Continue;
             foreach (MapConfig mapConfig in _currentMapConfigs)
             {
                 if (mapConfig.MovetoSpectatorOnJoin)
                 {
-                    AddTimer(2f, () =>
+                    AddTimer(0.3f, () =>
                     {
-                        CCSPlayerController? tmpPlayer = new(player.Handle);
-                        if (tmpPlayer == null) return;
-                        tmpPlayer.ChangeTeam(CsTeam.Spectator);
+                        Console.WriteLine($"Moving {player.PlayerName} to spectator team");
+                        player.ChangeTeam(CsTeam.Spectator);
                     });
-                    hasSpectatorOnJoinEnabled = true;
                 }
             }
-            if (!hasSpectatorOnJoinEnabled) RemoveSpectatorOnJoinListeners();
+            return HookResult.Continue;
         }
     }
 }
