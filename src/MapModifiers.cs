@@ -17,7 +17,6 @@ namespace MapModifiers
             // register listeners
             RegisterSpawnPointsListeners();
             RegisterClientCommandsListeners();
-            RegisterSpectatorOnJoinListeners();
             RegisterListener<Listeners.OnMapStart>(OnMapStart);
             RegisterListener<Listeners.OnServerPrecacheResources>(OnServerPrecacheResources);
             // print message if hot reload
