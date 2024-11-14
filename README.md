@@ -5,6 +5,7 @@
 [![GitHub release](https://img.shields.io/github/release/Kandru/cs2-map-modifiers?include_prereleases=&sort=semver&color=blue)](https://github.com/Kandru/cs2-map-modifier/releases/)
 [![License](https://img.shields.io/badge/License-GPLv3-blue)](#license)
 [![issues - cs2-map-modifier](https://img.shields.io/github/issues/Kandru/cs2-map-modifiers)](https://github.com/Kandru/cs2-map-modifier/issues)
+[![](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/donate/?hosted_button_id=C2AVYKGVP9TRG)
 
 The MapModifiers plugin is a powerful tool designed to enhance and customize your Counter-Strike 2 game server. It provides a range of functionalities to manage and modify various aspects of the map, making it ideal for creating dynamic and engaging gameplay experiences.
 
