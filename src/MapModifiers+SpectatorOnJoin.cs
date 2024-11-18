@@ -18,8 +18,10 @@ namespace MapModifiers
             {
                 if (mapConfig.MovetoSpectatorOnJoin)
                 {
-                    AddTimer(1.0f, () =>
+                    AddTimer(mapConfig.MovetoSpectatorOnJoinDelay, () =>
                     {
+                        if (player == null || !player.IsValid) return;
+                        if (player.Team != CsTeam.None) return;
                         player.ChangeTeam(CsTeam.Spectator);
                     });
                 }

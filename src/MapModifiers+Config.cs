@@ -21,6 +21,7 @@ namespace MapModifiers
 
         // spectator
         [JsonPropertyName("move_to_spectator_on_join")] public bool MovetoSpectatorOnJoin { get; set; } = true;
+        [JsonPropertyName("move_to_spectator_on_join_delay")] public float MovetoSpectatorOnJoinDelay { get; set; } = 14.9f;
 
         // spawns
         [JsonPropertyName("remove_original_spawns")] public bool DeleteOriginalSpawns { get; set; } = false;

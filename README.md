@@ -21,6 +21,9 @@ Execute specific client commands when a player joins the game. This feature allo
 3. Server Commands
 Run server commands automatically when the map launches. This ensures that the server is properly configured and ready for gameplay, with all necessary settings and adjustments applied as soon as the map is loaded.
 
+4. Spectator after Join
+Moves a player to spectator after join if no team got picked. Will avoid spawning AFK players into teams automatically but still provide the team join overlay for active players.
+
 
 ## Authors
 
@@ -57,6 +60,8 @@ This Plugin does automatically create a readable JSON configuration file. This c
       "client_cmds": [
           "play sounds/vo/announcer/cs2_classic/bombpl.vsnd"
       ],
+      "move_to_spectator_on_join": true,
+      "move_to_spectator_on_join_delay": 13.9,
       "remove_original_spawns": false,
       "statck_original_t_spawns": false,
       "statck_original_ct_spawns": false,
@@ -101,6 +106,9 @@ Executes server side commands on each map load.
 
 ### client_cmds
 Executes client side commands on player join.
+
+### move_to_spectator_on_join(_delay)
+Per default players that are connecting will join a team after 15 seconds even if they're AFK. This will provide the player with 14.9 seconds join time per default and move him to spectator if he did not choose a team yet. AFK players from the last map will not be AFK inside a team this way.
 
 ### remove_original_spawns
 Removes the original map-specific spawn points when each side has at least one custom spawn point.
