@@ -17,5 +17,5 @@
     "spawnpoints.marker.exists": "[MapModifiers] WARNING: spawn point marker already exists at that position. Skipping!",
     "spawnpoints.onmapstart": "[MapModifiers] Checking spawn points for map {mapName}",
     "clientcommands.execute": "[MapModifiers] Executed client command: {command} for {player}",
-    "servercommands.executed": "[MapModifiersPlugin] Executed server command: {command} for map {mapName}"
+    "servercommands.execute": "[MapModifiersPlugin] Executed server command: {command} for map {mapName}"
 }
