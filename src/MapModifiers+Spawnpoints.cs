@@ -8,12 +8,7 @@ namespace MapModifiers
 {
     public partial class MapModifiers : BasePlugin, IPluginConfig<PluginConfig>
     {
-        private void RegisterSpawnPointsListeners()
-        {
-            RegisterEventHandler<EventRoundStart>(SpawnPointsOnRoundStart);
-        }
-
-        private HookResult SpawnPointsOnRoundStart(EventRoundStart @event, GameEventInfo info)
+        private void SpawnPointsOnRoundStart(EventRoundStart @event, GameEventInfo info)
         {
             // TODO: does not work on map start and crashes servers (at least on windows)
             Console.WriteLine(Localizer["spawnpoints.onmapstart"].Value
@@ -77,7 +72,6 @@ namespace MapModifiers
                 Console.WriteLine(message);
                 SendGlobalChatMessage(message);
             }
-            return HookResult.Continue;
         }
 
         private SpawnPoint? GetNearestSpawnPoint(Vector origin, float maxDistance = 200)

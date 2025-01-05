@@ -15,10 +15,10 @@ namespace MapModifiers
             // initialize configuration
             LoadConfig();
             // register listeners
-            RegisterSpawnPointsListeners();
             RegisterClientCommandsListeners();
             RegisterSpectatorOnJoinListeners();
             RegisterListener<Listeners.OnMapStart>(OnMapStart);
+            RegisterEventHandler<EventRoundStart>(OnRoundStart);
             RegisterListener<Listeners.OnServerPrecacheResources>(OnServerPrecacheResources);
             // print message if hot reload
             if (hotReload)
@@ -47,7 +47,15 @@ namespace MapModifiers
             SaveConfig();
             // inform plugins
             ClientCommandsOnMapStart(mapName);
-            ServerCommandsOnMapStart(mapName);
+        }
+
+        private HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
+        {
+            // inform plugins
+            SpawnPointsOnRoundStart(@event, info);
+            ServerCommandsOnRoundStart();
+            // continue event
+            return HookResult.Continue;
         }
     }
 }

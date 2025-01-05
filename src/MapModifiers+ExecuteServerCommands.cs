@@ -5,7 +5,7 @@ namespace MapModifiers
 {
     public partial class MapModifiers : BasePlugin, IPluginConfig<PluginConfig>
     {
-        private void ServerCommandsOnMapStart(string mapName)
+        private void ServerCommandsOnRoundStart()
         {
             foreach (MapConfig mapConfig in _currentMapConfigs)
             {
@@ -14,12 +14,9 @@ namespace MapModifiers
                 {
                     Console.WriteLine(Localizer["servercommands.execute"].Value
                         .Replace("{command}", command)
-                        .Replace("{mapName}", mapName));
+                        .Replace("{mapName}", _currentMap));
                     // delay execution to allow server to load configurations first
-                    AddTimer(2.0f, () =>
-                    {
-                        Server.ExecuteCommand(command);
-                    });
+                    Server.ExecuteCommand(command);
                 }
             }
         }
