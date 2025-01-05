@@ -15,10 +15,10 @@ namespace MapModifiers
                     // server commands
                     foreach (var command in mapConfig.ServerCommands)
                     {
-                        Server.ExecuteCommand(command);
                         Console.WriteLine(Localizer["servercommands.execute"].Value
                             .Replace("{command}", command)
                             .Replace("{mapName}", mapName));
+                        Server.ExecuteCommand(command);
                     }
                 });
             }
