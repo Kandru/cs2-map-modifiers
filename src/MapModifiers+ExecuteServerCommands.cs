@@ -9,18 +9,18 @@ namespace MapModifiers
         {
             foreach (MapConfig mapConfig in _currentMapConfigs)
             {
-                // delay execution to allow server to load configurations first
-                AddTimer(2.0f, () =>
+                // server commands
+                foreach (var command in mapConfig.ServerCommands)
                 {
-                    // server commands
-                    foreach (var command in mapConfig.ServerCommands)
+                    Console.WriteLine(Localizer["servercommands.execute"].Value
+                        .Replace("{command}", command)
+                        .Replace("{mapName}", mapName));
+                    // delay execution to allow server to load configurations first
+                    AddTimer(2.0f, () =>
                     {
-                        Console.WriteLine(Localizer["servercommands.execute"].Value
-                            .Replace("{command}", command)
-                            .Replace("{mapName}", mapName));
                         Server.ExecuteCommand(command);
-                    }
-                });
+                    });
+                }
             }
         }
     }
