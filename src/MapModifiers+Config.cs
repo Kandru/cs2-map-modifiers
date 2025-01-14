@@ -22,7 +22,6 @@ namespace MapModifiers
         [JsonPropertyName("client_cmds")] public List<string> ClientCommands { get; set; } = new();
         // spectator
         [JsonPropertyName("move_to_spectator_on_join")] public bool MovetoSpectatorOnJoin { get; set; } = true;
-        [JsonPropertyName("move_to_spectator_on_join_delay")] public float MovetoSpectatorOnJoinDelay { get; set; } = 14.9f; // TODO: set default to mp_force_pick_time - 0.1 sec
         // spawns
         [JsonPropertyName("entities")] public List<MapConfigEntity> Entities { get; set; } = new();
     }

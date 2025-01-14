@@ -1,4 +1,5 @@
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Cvars;
 using CounterStrikeSharp.API.Modules.Utils;
 
 namespace MapModifiers
@@ -18,7 +19,10 @@ namespace MapModifiers
             {
                 if (mapConfig.MovetoSpectatorOnJoin)
                 {
-                    AddTimer(mapConfig.MovetoSpectatorOnJoinDelay, () =>
+                    // get convar
+                    ConVar? mpForcePickTime = ConVar.Find("mp_force_pick_time");
+                    if (mpForcePickTime == null) return HookResult.Continue;
+                    AddTimer(mpForcePickTime.GetPrimitiveValue<float>() - 0.1f, () =>
                     {
                         if (player == null || !player.IsValid) return;
                         if (player.Team != CsTeam.None) return;
