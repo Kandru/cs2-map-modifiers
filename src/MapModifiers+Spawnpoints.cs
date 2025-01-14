@@ -12,8 +12,6 @@ namespace MapModifiers
         {
             // count deathmatch spawns
             var playerSpawnEntities = Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("info_player_start").ToArray();
-            // count end of match spawns
-            var endSpawnEntities = Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("end_of_match").ToArray();
             // count ct spawns
             var ctSpawnEntities = Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("info_player_counterterrorist").ToArray();
             var ctIntroEntities = Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("team_intro_counterterrorist").ToArray();
@@ -24,7 +22,6 @@ namespace MapModifiers
             var tTeamSpawnEntities = Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("team_select_terrorist").ToArray();
             Console.WriteLine(Localizer["spawnpoints.count"].Value
                 .Replace("{spawns}", playerSpawnEntities.Length.ToString())
-                .Replace("{endmatch}", endSpawnEntities.Length.ToString())
                 .Replace("{ct}", ctSpawnEntities.Length.ToString())
                 .Replace("{ctintro}", ctIntroEntities.Length.ToString())
                 .Replace("{ctteamselect}", ctTeamSpawnEntities.Length.ToString())
@@ -44,14 +41,12 @@ namespace MapModifiers
                 Console.WriteLine(message);
                 SendGlobalChatMessage(message);
             }
-            if (endSpawnEntities.Length < 1
-                || ctTeamSpawnEntities.Length < 1
+            if (ctTeamSpawnEntities.Length < 1
                 || ctIntroEntities.Length < 1
                 || tTeamSpawnEntities.Length < 1
                 || tIntroEntities.Length < 1)
             {
                 var message = Localizer["spawnpoints.countteamspawns.warning"].Value
-                    .Replace("{endmatch}", endSpawnEntities.Length.ToString())
                     .Replace("{ctintro}", ctIntroEntities.Length.ToString())
                     .Replace("{ctteamselect}", ctTeamSpawnEntities.Length.ToString())
                     .Replace("{tintro}", tIntroEntities.Length.ToString())
