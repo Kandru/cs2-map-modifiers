@@ -64,7 +64,7 @@ namespace MapModifiers
 
         [ConsoleCommand("addentity", "Allows to add new entities")]
         [RequiresPermissions("@mapmodifiers/spawnpoints")]
-        [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY, minArgs: 2, usage: "[entity] [ct/t/spec/none] [name]")]
+        [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY, minArgs: 2, usage: "[entity] [ct/t/spec/none] [permanent <true/false>] [name]")]
         public void CommandAddEntity(CCSPlayerController? player, CommandInfo command)
         {
             if (player == null
@@ -72,7 +72,8 @@ namespace MapModifiers
                 || player.Pawn.Value == null) return;
             var entityType = command.GetArg(1);
             var entityTeam = command.GetArg(2);
-            var entityName = command.GetArg(3);
+            var isPermanent = command.GetArg(3) == "true" ? true : false;
+            var entityName = command.GetArg(4);
             entityName ??= "unnamed";
             if (!entityTeam.Equals("ct") && !entityTeam.Equals("t") && !entityTeam.Equals("spec") && !entityTeam.Equals("none"))
             {
@@ -107,11 +108,14 @@ namespace MapModifiers
             CBaseEntity? createdEntity = CreateEntity(newEntity);
             if (createdEntity == null
                 || createdEntity.AbsOrigin == null) return;
-            // update entity origin because the engine might place it differently (e.g. hostage_entity is always on the ground)
-            newEntity.Origin = [createdEntity.AbsOrigin.X, createdEntity.AbsOrigin.Y, createdEntity.AbsOrigin.Z];
-            // save configuration
-            Config.MapConfigs[_currentMap].Entities.Add(newEntity);
-            SaveConfig();
+            if (isPermanent)
+            {
+                // update entity origin because the engine might place it differently (e.g. hostage_entity is always on the ground)
+                newEntity.Origin = [createdEntity.AbsOrigin.X, createdEntity.AbsOrigin.Y, createdEntity.AbsOrigin.Z];
+                // save configuration
+                Config.MapConfigs[_currentMap].Entities.Add(newEntity);
+                SaveConfig();
+            }
             command.ReplyToCommand($"[MapModifiersPlugin] Created Entity for {entityType} at {origin.X}, {origin.Y}, {origin.Z} with angle {angle.X}, {angle.Y}, {angle.Z}");
         }
 
