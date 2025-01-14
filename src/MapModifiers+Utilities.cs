@@ -1,5 +1,6 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Utils;
 
 namespace MapModifiers
 {
@@ -22,6 +23,14 @@ namespace MapModifiers
                 if (alert) AddTimer(delay, () => player.PrintToCenterAlert(message));
                 else AddTimer(delay, () => player.PrintToCenterHtml(message));
             }
+        }
+
+        private float CalculateDistance(Vector point1, Vector point2)
+        {
+            float dx = point1.X - point2.X;
+            float dy = point1.Y - point2.Y;
+            float dz = point1.Z - point2.Z;
+            return (float)Math.Sqrt(dx * dx + dy * dy + dz * dz);
         }
     }
 }

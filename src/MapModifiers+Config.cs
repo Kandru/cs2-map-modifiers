@@ -6,9 +6,11 @@ using CounterStrikeSharp.API.Modules.Config;
 
 namespace MapModifiers
 {
-    public class MapConfigSpawnPoint
+    public class MapConfigEntity
     {
         [JsonPropertyName("name")] public string Name { get; set; } = "unnamed";
+        [JsonPropertyName("class_name")] public string ClassName { get; set; } = "info_player_start";
+        [JsonPropertyName("team")] public int Team { get; set; } = 0; // 0 = None, 1 = Spectator, 2 = Terrorist, 3 = CounterTerroist
         [JsonPropertyName("origin")] public float[] Origin { get; set; } = new float[3];
         [JsonPropertyName("angle")] public float[] Angle { get; set; } = new float[3];
     }
@@ -18,17 +20,11 @@ namespace MapModifiers
         // commands
         [JsonPropertyName("server_cmds")] public List<string> ServerCommands { get; set; } = new();
         [JsonPropertyName("client_cmds")] public List<string> ClientCommands { get; set; } = new();
-
         // spectator
         [JsonPropertyName("move_to_spectator_on_join")] public bool MovetoSpectatorOnJoin { get; set; } = true;
-        [JsonPropertyName("move_to_spectator_on_join_delay")] public float MovetoSpectatorOnJoinDelay { get; set; } = 14.9f;
-
+        [JsonPropertyName("move_to_spectator_on_join_delay")] public float MovetoSpectatorOnJoinDelay { get; set; } = 14.9f; // TODO: set default to mp_force_pick_time - 0.1 sec
         // spawns
-        [JsonPropertyName("remove_original_spawns")] public bool DeleteOriginalSpawns { get; set; } = false;
-        [JsonPropertyName("statck_original_t_spawns")] public bool StackOriginalTSpawns { get; set; } = false;
-        [JsonPropertyName("statck_original_ct_spawns")] public bool StackOriginalCTSpawns { get; set; } = false;
-        [JsonPropertyName("t_spawns")] public List<MapConfigSpawnPoint> TSpawns { get; set; } = new();
-        [JsonPropertyName("ct_spawns")] public List<MapConfigSpawnPoint> CTSpawns { get; set; } = new();
+        [JsonPropertyName("entities")] public List<MapConfigEntity> Entities { get; set; } = new();
     }
 
     public class PluginConfig : BasePluginConfig

@@ -10,19 +10,21 @@ namespace MapModifiers
     {
         [ConsoleCommand("addspawn", "Allows to add new spawn points")]
         [RequiresPermissions("@mapmodifiers/spawnpoints")]
-        [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY, minArgs: 1, usage: "[ct/t] [name]")]
+        [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY, minArgs: 1, usage: "[ct/t/both] [name]")]
         public void CommandAddSpawn(CCSPlayerController? player, CommandInfo command)
         {
-            if (player == null || !player.PlayerPawn.IsValid || player.PlayerPawn.Value == null || player.LifeState != (byte)LifeState_t.LIFE_ALIVE) return;
+            if (player == null
+                || !player.Pawn.IsValid
+                || player.Pawn.Value == null) return;
             var spawnType = command.GetArg(1);
             var spawnName = command.GetArg(2);
             spawnName ??= "unnamed";
-            if (!spawnType.Equals("ct") && !spawnType.Equals("t"))
+            if (!spawnType.Equals("ct") && !spawnType.Equals("t") && !spawnType.Equals("both"))
             {
-                command.ReplyToCommand("[MapModifiersPlugin] Invalid spawn type. Use 'ct' or 't'");
+                command.ReplyToCommand("[MapModifiersPlugin] Invalid spawn type. Use 'ct', 't' or 'both'");
                 return;
             }
-            var origin = player.PlayerPawn.Value.AbsOrigin;
+            var origin = player.Pawn.Value.AbsOrigin;
             if (origin == null)
             {
                 command.ReplyToCommand("[MapModifiersPlugin] You do not have a valid position");
@@ -33,42 +35,51 @@ namespace MapModifiers
                 command.ReplyToCommand("[MapModifiersPlugin] You do not have a valid position");
                 return;
             }
-            var angle = player.PlayerPawn.Value.AbsRotation;
-            if (angle == null)
-            {
-                command.ReplyToCommand("[MapModifiersPlugin] You do not have a valid angle");
-                return;
-            }
-            MapConfigSpawnPoint newSpawnPoint = new()
+            QAngle angle = new QAngle(
+                0,
+                (float)Math.Round(player.Pawn.Value.V_angle!.Y, 5),
+                0
+            );
+            MapConfigEntity newSpawnPoint = new()
             {
                 Name = spawnName,
+                ClassName = spawnType == "t" ? "info_player_terrorist" : spawnType == "ct" ? "info_player_counterterrorist" : "info_player_start",
+                Team = spawnType == "t" ? 2 : spawnType == "ct" ? 3 : 0,
                 Origin = [origin.X, origin.Y, origin.Z + 10], // add 10 units to avoid clipping like original spawn points
                 Angle = [angle.X, angle.Y, angle.Z],
             };
             // create spawnpoint
-            CreateSpawnPoint(spawnType, newSpawnPoint);
+            CBaseEntity? createdEntity = CreateEntity(newSpawnPoint);
+            if (createdEntity == null
+                || createdEntity.AbsOrigin == null) return;
+            // update entity origin because the engine might place it differently (e.g. hostage_entity is always on the ground)
+            newSpawnPoint.Origin = [createdEntity.AbsOrigin.X, createdEntity.AbsOrigin.Y, createdEntity.AbsOrigin.Z];
             // save configuration
-            if (spawnType == "t")
-            {
-                Config.MapConfigs[_currentMap].TSpawns.Add(newSpawnPoint);
-            }
-            else
-            {
-                Config.MapConfigs[_currentMap].CTSpawns.Add(newSpawnPoint);
-            }
+            Config.MapConfigs[_currentMap].Entities.Add(newSpawnPoint);
             SaveConfig();
             // update markers
             ShowSpawnPointMarkers();
             command.ReplyToCommand($"[MapModifiersPlugin] Created Spawn point for {spawnType} at {origin.X}, {origin.Y}, {origin.Z} with angle {angle.X}, {angle.Y}, {angle.Z}");
         }
 
-        [ConsoleCommand("delspawn", "Deletes the nearest custom spawn point (max 200 units)")]
+        [ConsoleCommand("addentity", "Allows to add new entities")]
         [RequiresPermissions("@mapmodifiers/spawnpoints")]
-        [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY, minArgs: 0)]
-        public void CommandDelSpawn(CCSPlayerController? player, CommandInfo command)
+        [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY, minArgs: 2, usage: "[entity] [ct/t/spec/none] [name]")]
+        public void CommandAddEntity(CCSPlayerController? player, CommandInfo command)
         {
-            if (player == null || !player.PlayerPawn.IsValid || player.PlayerPawn.Value == null || player.LifeState != (byte)LifeState_t.LIFE_ALIVE) return;
-            var origin = player.PlayerPawn.Value.AbsOrigin;
+            if (player == null
+                || !player.Pawn.IsValid
+                || player.Pawn.Value == null) return;
+            var entityType = command.GetArg(1);
+            var entityTeam = command.GetArg(2);
+            var entityName = command.GetArg(3);
+            entityName ??= "unnamed";
+            if (!entityTeam.Equals("ct") && !entityTeam.Equals("t") && !entityTeam.Equals("spec") && !entityTeam.Equals("none"))
+            {
+                command.ReplyToCommand("[MapModifiersPlugin] Invalid spawn type. Use 'ct', 't', 'spec' or 'none'");
+                return;
+            }
+            var origin = player.Pawn.Value.AbsOrigin;
             if (origin == null)
             {
                 command.ReplyToCommand("[MapModifiersPlugin] You do not have a valid position");
@@ -79,43 +90,80 @@ namespace MapModifiers
                 command.ReplyToCommand("[MapModifiersPlugin] You do not have a valid position");
                 return;
             }
-            SpawnPoint? spawnEntity = GetNearestSpawnPoint(origin, 200);
-            if (spawnEntity == null || spawnEntity.AbsOrigin == null || !spawnEntity.IsValid)
+            QAngle angle = new QAngle(
+                0,
+                (float)Math.Round(player.Pawn.Value.V_angle!.Y, 5),
+                0
+            );
+            MapConfigEntity newEntity = new()
             {
-                command.ReplyToCommand("[MapModifiersPlugin] No spawn point found within 200 units");
+                Name = entityName,
+                ClassName = entityType,
+                Team = entityTeam == "t" ? 2 : entityTeam == "ct" ? 3 : entityTeam == "spec" ? 1 : 0,
+                Origin = [origin.X, origin.Y, origin.Z + 10], // add 10 units to avoid clipping
+                Angle = [angle.X, angle.Y, angle.Z],
+            };
+            // create entity
+            CBaseEntity? createdEntity = CreateEntity(newEntity);
+            if (createdEntity == null
+                || createdEntity.AbsOrigin == null) return;
+            // update entity origin because the engine might place it differently (e.g. hostage_entity is always on the ground)
+            newEntity.Origin = [createdEntity.AbsOrigin.X, createdEntity.AbsOrigin.Y, createdEntity.AbsOrigin.Z];
+            // save configuration
+            Config.MapConfigs[_currentMap].Entities.Add(newEntity);
+            SaveConfig();
+            command.ReplyToCommand($"[MapModifiersPlugin] Created Entity for {entityType} at {origin.X}, {origin.Y}, {origin.Z} with angle {angle.X}, {angle.Y}, {angle.Z}");
+        }
+
+        [ConsoleCommand("delentity", "Deletes the nearest custom entity (max 200 units)")]
+        [RequiresPermissions("@mapmodifiers/spawnpoints")]
+        [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY, minArgs: 0, usage: "[delete <true/false>]")]
+        public void CommandDelEntity(CCSPlayerController? player, CommandInfo command)
+        {
+            bool deleteEntity = command.GetArg(1) == "true" ? true : false;
+            if (player == null
+                || !player.Pawn.IsValid
+                || player.Pawn.Value == null) return;
+            var origin = player.Pawn.Value.AbsOrigin;
+            if (origin == null
+                || (origin.X == 0 && origin.Y == 0 && origin.Z == 0))
+            {
+                command.ReplyToCommand("[MapModifiersPlugin] You do not have a valid position");
+                return;
+            }
+            CBaseEntity? nearestEntity = GetNearestEntity(origin, 200);
+            if (nearestEntity == null
+                || !nearestEntity.IsValid
+                || nearestEntity.AbsOrigin == null)
+            {
+                command.ReplyToCommand("[MapModifiersPlugin] No entity found within 200 units");
                 return;
             }
             // update configuration
             var mapConfig = Config.MapConfigs[_currentMap];
-            foreach (var spawnPoint in mapConfig.TSpawns)
+            foreach (var entity in mapConfig.Entities)
             {
-                if (spawnPoint.Origin.SequenceEqual([spawnEntity.AbsOrigin.X, spawnEntity.AbsOrigin.Y, spawnEntity.AbsOrigin.Z]))
+                if (entity.Origin.SequenceEqual([nearestEntity.AbsOrigin.X, nearestEntity.AbsOrigin.Y, nearestEntity.AbsOrigin.Z]))
                 {
-                    command.ReplyToCommand($"[MapModifiersPlugin] Removed T Spawn Point at {spawnEntity.AbsOrigin.X}, {spawnEntity.AbsOrigin.Y}, {spawnEntity.AbsOrigin.Z}");
-                    mapConfig.TSpawns.Remove(spawnPoint);
+                    // acknowledge removal
+                    command.ReplyToCommand($"[MapModifiersPlugin] Removed Entity {entity.Name} ({entity.ClassName}) at {nearestEntity.AbsOrigin.X}, {nearestEntity.AbsOrigin.Y}, {nearestEntity.AbsOrigin.Z}");
+                    // remove entity from configuration
+                    mapConfig.Entities.Remove(entity);
+                    // save configuration
+                    SaveConfig();
+                    // delete spawn marker
+                    if (nearestEntity.DesignerName != null && nearestEntity.DesignerName.Contains("info_player_"))
+                        ChangeSpawnPointMarker(new Vector(
+                            nearestEntity.AbsOrigin.X,
+                            nearestEntity.AbsOrigin.Y,
+                            nearestEntity.AbsOrigin.Z
+                        ),
+                        color: [125]);
+                    // delete entity
+                    if (deleteEntity) nearestEntity.Remove();
                     break;
                 }
             }
-            foreach (var spawnPoint in mapConfig.CTSpawns)
-            {
-                if (spawnPoint.Origin.SequenceEqual([spawnEntity.AbsOrigin.X, spawnEntity.AbsOrigin.Y, spawnEntity.AbsOrigin.Z]))
-                {
-                    command.ReplyToCommand($"[MapModifiersPlugin] Removed CT Spawn Point at {spawnEntity.AbsOrigin.X}, {spawnEntity.AbsOrigin.Y}, {spawnEntity.AbsOrigin.Z}");
-                    mapConfig.CTSpawns.Remove(spawnPoint);
-                    break;
-                }
-            }
-            SaveConfig();
-            // delete maker (if any)
-            ChangeSpawnPointMarker(new Vector(
-                spawnEntity.AbsOrigin.X,
-                spawnEntity.AbsOrigin.Y,
-                spawnEntity.AbsOrigin.Z
-            ),
-            color: [125]);
-            // TODO: deleting SpawnEntity does crash server on next round
-            // delete entity
-            //spawnEntity.Remove();
         }
 
         [ConsoleCommand("showspawns", "Whether to show all spawn points or not")]
@@ -123,7 +171,7 @@ namespace MapModifiers
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY, minArgs: 0)]
         public void CommandShowSpawns(CCSPlayerController? player, CommandInfo command)
         {
-            if (player == null || !player.PlayerPawn.IsValid) return;
+            if (player == null) return;
             var amountSpawnPoints = ToggleSpawnPointMarkers();
             command.ReplyToCommand($"[MapModifiersPlugin] Toggled {amountSpawnPoints} spawn points");
         }

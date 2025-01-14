@@ -10,94 +10,55 @@ namespace MapModifiers
     {
         private void SpawnPointsOnRoundStart(EventRoundStart @event, GameEventInfo info)
         {
-            // TODO: does not work on map start and crashes servers (at least on windows)
-            Console.WriteLine(Localizer["spawnpoints.onmapstart"].Value
-                           .Replace("{mapName}", _currentMap));
-            foreach (MapConfig mapConfig in _currentMapConfigs)
-            {
-                // try to delete spawn points
-                if (mapConfig.TSpawns.Count > 0 || mapConfig.CTSpawns.Count > 0)
-                {
-                    if (mapConfig.DeleteOriginalSpawns)
-                    {
-                        // sanity checks
-                        if (mapConfig.TSpawns.Count == 0)
-                        {
-                            Console.WriteLine(Localizer["spawnpoints.error.nospawns"].Value
-                                .Replace("{side}", "T")
-                                .Replace("{mapName}", _currentMap));
-                        }
-                        else if (mapConfig.CTSpawns.Count == 0)
-                        {
-                            Console.WriteLine(Localizer["spawnpoints.error.nospawns"].Value
-                                .Replace("{side}", "CT")
-                                .Replace("{mapName}", _currentMap));
-                        }
-                        else
-                        {
-                            RemoveSpawnPoints();
-                        }
-                    }
-                }
-                // add custom spawn points
-                Console.WriteLine(Localizer["spawnpoints.createspawnpoints"].Value
-                    .Replace("{mapName}", _currentMap));
-                foreach (var spawnConfig in mapConfig.TSpawns)
-                {
-                    CreateSpawnPoint("t", new MapConfigSpawnPoint
-                    {
-                        Origin = [spawnConfig.Origin[0], spawnConfig.Origin[1], spawnConfig.Origin[2]],
-                        Angle = [spawnConfig.Angle[0], spawnConfig.Angle[1], spawnConfig.Angle[2]]
-                    });
-                }
-
-                foreach (var spawnConfig in mapConfig.CTSpawns)
-                {
-                    CreateSpawnPoint("ct", new MapConfigSpawnPoint
-                    {
-                        Origin = [spawnConfig.Origin[0], spawnConfig.Origin[1], spawnConfig.Origin[2]],
-                        Angle = [spawnConfig.Angle[0], spawnConfig.Angle[1], spawnConfig.Angle[2]]
-                    });
-                }
-            }
-            // count all spawn points
-            var spawnEntities = Utilities.FindAllEntitiesByDesignerName<SpawnPoint>("info_player_").ToArray();
+            // count deathmatch spawns
+            var playerSpawnEntities = Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("info_player_start").ToArray();
+            // count end of match spawns
+            var endSpawnEntities = Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("end_of_match").ToArray();
+            // count ct spawns
+            var ctSpawnEntities = Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("info_player_counterterrorist").ToArray();
+            var ctIntroEntities = Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("team_intro_counterterrorist").ToArray();
+            var ctTeamSpawnEntities = Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("team_select_counterterrorist").ToArray();
+            // count t spawns
+            var tSpawnEntities = Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("info_player_terrorist").ToArray();
+            var tIntroEntities = Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("team_intro_terrorist").ToArray();
+            var tTeamSpawnEntities = Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("team_select_terrorist").ToArray();
             Console.WriteLine(Localizer["spawnpoints.count"].Value
-                .Replace("{count}", spawnEntities.Length.ToString()));
-            if (spawnEntities.Length < Server.MaxPlayers)
+                .Replace("{spawns}", playerSpawnEntities.Length.ToString())
+                .Replace("{endmatch}", endSpawnEntities.Length.ToString())
+                .Replace("{ct}", ctSpawnEntities.Length.ToString())
+                .Replace("{ctintro}", ctIntroEntities.Length.ToString())
+                .Replace("{ctteamselect}", ctTeamSpawnEntities.Length.ToString())
+                .Replace("{t}", tSpawnEntities.Length.ToString())
+                .Replace("{tintro}", tIntroEntities.Length.ToString())
+                .Replace("{tteamselect}", tTeamSpawnEntities.Length.ToString())
+                .Replace("{maxplayers}", Server.MaxPlayers.ToString()));
+            if ((playerSpawnEntities.Length
+                + ctSpawnEntities.Length
+                + tSpawnEntities.Length) < Server.MaxPlayers)
             {
-                var message = Localizer["spawnpoints.count.warning"].Value
-                    .Replace("{count}", spawnEntities.Length.ToString())
-                    .Replace("{players}", Server.MaxPlayers.ToString());
+                var message = Localizer["spawnpoints.countspawns.warning"].Value
+                    .Replace("{spawns}", playerSpawnEntities.Length.ToString())
+                    .Replace("{ct}", ctSpawnEntities.Length.ToString())
+                    .Replace("{t}", tSpawnEntities.Length.ToString())
+                    .Replace("{maxplayers}", Server.MaxPlayers.ToString());
                 Console.WriteLine(message);
                 SendGlobalChatMessage(message);
             }
-        }
-
-        private SpawnPoint? GetNearestSpawnPoint(Vector origin, float maxDistance = 200)
-        {
-            var spawnEntities = Utilities.FindAllEntitiesByDesignerName<SpawnPoint>("info_player_").ToArray();
-            SpawnPoint? nearestSpawn = null;
-            float nearestDistance = float.MaxValue;
-            foreach (var spawn in spawnEntities)
+            if (endSpawnEntities.Length < 1
+                || ctTeamSpawnEntities.Length < 1
+                || ctIntroEntities.Length < 1
+                || tTeamSpawnEntities.Length < 1
+                || tIntroEntities.Length < 1)
             {
-                if (spawn.AbsOrigin == null) continue;
-                float distance = CalculateDistance(spawn.AbsOrigin, origin);
-                if (distance <= maxDistance && distance < nearestDistance)
-                {
-                    nearestDistance = distance;
-                    nearestSpawn = spawn;
-                }
+                var message = Localizer["spawnpoints.countteamspawns.warning"].Value
+                    .Replace("{endmatch}", endSpawnEntities.Length.ToString())
+                    .Replace("{ctintro}", ctIntroEntities.Length.ToString())
+                    .Replace("{ctteamselect}", ctTeamSpawnEntities.Length.ToString())
+                    .Replace("{tintro}", tIntroEntities.Length.ToString())
+                    .Replace("{tteamselect}", tTeamSpawnEntities.Length.ToString());
+                Console.WriteLine(message);
+                SendGlobalChatMessage(message);
             }
-            return nearestSpawn;
-        }
-
-        private float CalculateDistance(Vector point1, Vector point2)
-        {
-            float dx = point1.X - point2.X;
-            float dy = point1.Y - point2.Y;
-            float dz = point1.Z - point2.Z;
-            return (float)Math.Sqrt(dx * dx + dy * dy + dz * dz);
         }
 
         private int ToggleSpawnPointMarkers()
@@ -117,7 +78,7 @@ namespace MapModifiers
         private int ShowSpawnPointMarkers()
         {
             var spawnPointEntities = Utilities.FindAllEntitiesByDesignerName<SpawnPoint>("info_player_").ToArray();
-            var spawnMarkerEntities = Utilities.FindAllEntitiesByDesignerName<CDynamicProp>("prop_dynamic").Where(x => x.Globalname != null && x.Globalname.Contains("mapmodifiers_spawnpoint")).ToArray();
+            var spawnMarkerEntities = Utilities.FindAllEntitiesByDesignerName<CDynamicProp>("prop_dynamic").Where(x => x.Globalname != null && x.Globalname.Contains("mapmodifiers_spawnpointmarker")).ToArray();
             var count = 0;
             foreach (var entity in spawnPointEntities)
             {
@@ -129,7 +90,6 @@ namespace MapModifiers
                     Math.Round(x.AbsOrigin.Y, 3) == Math.Round(spawnPointEntity.AbsOrigin.Y, 3) &&
                     Math.Round(x.AbsOrigin.Z, 3) == Math.Round(spawnPointEntity.AbsOrigin.Z, 3)))
                 {
-                    Console.WriteLine(Localizer["spawnpoints.marker.exists"]);
                     continue;
                 }
                 CDynamicProp spawnMarkerEntity = Utilities.CreateEntityByName<CDynamicProp>("prop_dynamic")!;
@@ -157,7 +117,7 @@ namespace MapModifiers
                 int alpha = 255;
                 // check whether spawnpoint does exist in current map configuration
                 var mapConfig = Config.MapConfigs[_currentMap];
-                var spawnPointConfig = mapConfig.TSpawns.Concat(mapConfig.CTSpawns).FirstOrDefault(x => x.Origin.SequenceEqual([spawnPointEntity.AbsOrigin.X, spawnPointEntity.AbsOrigin.Y, spawnPointEntity.AbsOrigin.Z]));
+                var spawnPointConfig = mapConfig.Entities.FirstOrDefault(x => x.Origin.SequenceEqual([spawnPointEntity.AbsOrigin.X, spawnPointEntity.AbsOrigin.Y, spawnPointEntity.AbsOrigin.Z]));
                 if (spawnPointConfig == null)
                 {
                     alpha = 125;
@@ -168,15 +128,22 @@ namespace MapModifiers
                     // CT spawn
                     spawnMarkerEntity.Render = Color.FromArgb(0, 0, 255);
                     // if custom CT spawn
-                    if (spawnPointEntity.Globalname != null && spawnPointEntity.Globalname.Contains("mapmodifiers_spawnpoint_"))
+                    if (spawnPointEntity.Globalname != null && spawnPointEntity.Globalname.Contains("mapmodifiers_info_player_counterterrorist"))
                         spawnMarkerEntity.Render = Color.FromArgb(alpha, 4, 138, 255);
                 }
-                else
+                else if (spawnPointEntity.DesignerName.Contains("terrorist"))
                 {
                     spawnMarkerEntity.Render = Color.FromArgb(255, 0, 0);
                     // if custom T spawn
-                    if (spawnPointEntity.Globalname != null && spawnPointEntity.Globalname.Contains("mapmodifiers_spawnpoint_"))
+                    if (spawnPointEntity.Globalname != null && spawnPointEntity.Globalname.Contains("mapmodifiers_info_player_terrorist"))
                         spawnMarkerEntity.Render = Color.FromArgb(alpha, 255, 90, 0);
+                }
+                else
+                {
+                    spawnMarkerEntity.Render = Color.FromArgb(255, 255, 255);
+                    // if custom DM spawn
+                    if (spawnPointEntity.Globalname != null && spawnPointEntity.Globalname.Contains("mapmodifiers_info_player_start"))
+                        spawnMarkerEntity.Render = Color.FromArgb(alpha, 220, 220, 220);
                 }
             }
             return count;
@@ -184,7 +151,7 @@ namespace MapModifiers
 
         private int RemoveSpawnPointMarkers()
         {
-            var spawnMarkerEntities = Utilities.FindAllEntitiesByDesignerName<CDynamicProp>("prop_dynamic").Where(x => x.Globalname != null && x.Globalname.Contains("mapmodifiers_spawnpoint")).ToArray();
+            var spawnMarkerEntities = Utilities.FindAllEntitiesByDesignerName<CDynamicProp>("prop_dynamic").Where(x => x.Globalname != null && x.Globalname.Contains("mapmodifiers_spawnpointmarker")).ToArray();
             var count = 0;
             foreach (var entity in spawnMarkerEntities)
             {
@@ -197,7 +164,7 @@ namespace MapModifiers
 
         private bool ChangeSpawnPointMarker(Vector origin, int[]? color = null)
         {
-            var spawnMarkerEntities = Utilities.FindAllEntitiesByDesignerName<CDynamicProp>("prop_dynamic").Where(x => x.Globalname != null && x.Globalname.Contains("mapmodifiers_spawnpoint")).ToArray();
+            var spawnMarkerEntities = Utilities.FindAllEntitiesByDesignerName<CDynamicProp>("prop_dynamic").Where(x => x.Globalname != null && x.Globalname.Contains("mapmodifiers_spawnpointmarker")).ToArray();
             var spawnMarkerEntity = spawnMarkerEntities.FirstOrDefault(x => x.AbsOrigin != null && origin != null &&
                 Math.Round(x.AbsOrigin.X, 3) == Math.Round(origin.X, 3) &&
                 Math.Round(x.AbsOrigin.Y, 3) == Math.Round(origin.Y, 3) &&
@@ -226,71 +193,6 @@ namespace MapModifiers
                 return true;
             }
             return false;
-        }
-
-        private int RemoveSpawnPoints(bool removeCustom = false)
-        {
-            var spawnEntities = Utilities.FindAllEntitiesByDesignerName<SpawnPoint>("info_player_").ToArray();
-            var count = 0;
-            foreach (var entity in spawnEntities)
-            {
-                count++;
-                var spawnEntity = entity.As<SpawnPoint>();
-                if (removeCustom || !spawnEntity.Globalname.Contains("mapmodifiers_spawnpoint")) spawnEntity.Remove();
-            }
-            return count;
-        }
-
-        private void RemoveSpawnPoint(string globalname = "")
-        {
-            var spawnEntities = Utilities.FindAllEntitiesByDesignerName<SpawnPoint>("info_player_").ToArray();
-            foreach (var entity in spawnEntities.Where(x => x.Globalname != null && x.Globalname == globalname))
-            {
-                var spawnEntity = entity.As<SpawnPoint>();
-                spawnEntity.Remove();
-            }
-        }
-
-        private void CreateSpawnPoint(string type, MapConfigSpawnPoint spawnPoint)
-        {
-            var spawnPointEntities = Utilities.FindAllEntitiesByDesignerName<SpawnPoint>("info_player_").ToArray();
-            // check if spawn point already exists at that origin
-            if (spawnPointEntities.Any(x => x.AbsOrigin != null && spawnPoint.Origin != null &&
-                Math.Round(x.AbsOrigin.X, 3) == Math.Round(spawnPoint.Origin[0], 3) &&
-                Math.Round(x.AbsOrigin.Y, 3) == Math.Round(spawnPoint.Origin[1], 3) &&
-                Math.Round(x.AbsOrigin.Z, 3) == Math.Round(spawnPoint.Origin[2], 3)))
-            {
-                Console.WriteLine(Localizer["spawnpoints.error.exists"]);
-                return;
-            }
-            SpawnPoint spawn;
-            if (type == "t")
-            {
-                spawn = Utilities.CreateEntityByName<SpawnPoint>("info_player_terrorist")!;
-            }
-            else
-            {
-                spawn = Utilities.CreateEntityByName<SpawnPoint>("info_player_counterterrorist")!;
-            }
-            if (spawn == null || spawn.AbsOrigin == null || spawn.AbsRotation == null || !spawn.IsValid)
-            {
-                Console.WriteLine(Localizer["spawnpoints.error.noentity"]);
-                return;
-            }
-            // set attributes
-            spawn.Globalname = $"mapmodifiers_spawnpoint_{(int)spawnPoint.Origin[0]}{(int)spawnPoint.Origin[1]}{(int)spawnPoint.Origin[2]}";
-            spawn.AbsOrigin.X = spawnPoint.Origin[0];
-            spawn.AbsOrigin.Y = spawnPoint.Origin[1];
-            spawn.AbsOrigin.Z = spawnPoint.Origin[2];
-            spawn.AbsRotation.X = spawnPoint.Angle[0];
-            spawn.AbsRotation.Y = spawnPoint.Angle[1];
-            spawn.AbsRotation.Z = spawnPoint.Angle[2];
-            // spawn it
-            spawn.DispatchSpawn();
-            Console.WriteLine(Localizer["spawnpoints.created"].Value
-                .Replace("{type}", type)
-                .Replace("{origin}", $"{spawnPoint.Origin[0]} {spawnPoint.Origin[1]} {spawnPoint.Origin[2]}")
-                .Replace("{angle}", $"{spawnPoint.Angle[0]} {spawnPoint.Angle[1]} {spawnPoint.Angle[2]}"));
         }
     }
 }

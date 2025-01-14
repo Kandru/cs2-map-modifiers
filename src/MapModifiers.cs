@@ -23,10 +23,10 @@ namespace MapModifiers
             // print message if hot reload
             if (hotReload)
             {
-                // initialize configuration
-                InitializeConfig(_currentMap);
                 // set current map
                 _currentMap = Server.MapName;
+                // initialize configuration
+                InitializeConfig(_currentMap);
                 Console.WriteLine(Localizer["core.hotreload"]);
             }
         }
@@ -52,6 +52,7 @@ namespace MapModifiers
         private HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
         {
             // inform plugins
+            EntitiesOnRoundStart(@event, info);
             SpawnPointsOnRoundStart(@event, info);
             ServerCommandsOnRoundStart();
             // continue event
