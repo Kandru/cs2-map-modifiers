@@ -55,6 +55,7 @@ namespace MapModifiers
             EntitiesOnRoundStart(@event, info);
             SpawnPointsOnRoundStart(@event, info);
             ServerCommandsOnRoundStart();
+            DisableTeamIntroOnRoundStart();
             // continue event
             return HookResult.Continue;
         }
