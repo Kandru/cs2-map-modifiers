@@ -7,6 +7,7 @@
     "core.configinitialized": "[MapModifiers] Konfiguration initialisiert!",
     "entities.error.noentity": "[MapModifiers] FEHLER: Konnte Entität nicht erstellen",
     "entities.created": "[MapModifiers] Spawnpunkt für {type} bei {origin} mit Winkel {angle} erstellt",
+    "entities.deleted": "[MapModifiers] lösche Entity {type} bei {origin} mit Winkel {angle}",
     "spawnpoints.count": "[MapModifiers] Spawnpunkte: {spawns}x DM, {ct}x CT, {t}x T, {ctteamselect}x CT Teamselect, {tteamselect}x T Teamselect, {ctintro}x CT-Intro, {tintro}x T-Intro für {maxplayers} Spieler.",
     "spawnpoints.countspawns.warning": "[MapModifiers] Nur {spawns} DM-Spawnpunkte, {ct} CT-Spawnpunkte und {t} T-Spawnpunkte für {maxplayers} Spieler!",
     "spawnpoints.countteamspawns.warning": "[MapModifiers] Nur {ctteamselect} CT Teamselect-Spawnpunkt, {tteamselect} T Teamselect-Spawnpunkt, {ctintro} CT-Intro-Spawnpunkt, {tintro} T-Intro-Spawnpunkt!",

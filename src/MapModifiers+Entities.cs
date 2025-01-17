@@ -14,8 +14,35 @@ namespace MapModifiers
             {
                 foreach (MapConfigEntity entity in mapConfig.Entities)
                 {
-                    CreateEntity(entity);
+                    if (entity.Type == 0) CreateEntity(entity);
+                    else if (entity.Type == 1) RemoveEntity(entity);
                 }
+            }
+        }
+
+        private void RemoveEntity(MapConfigEntity entity)
+        {
+            var lookupEntities = Utilities.FindAllEntitiesByDesignerName<CBaseEntity>(entity.ClassName).ToArray();
+            foreach (CBaseEntity lookupEntity in lookupEntities)
+            {
+                // ignore if not set properly
+                if (lookupEntity.AbsOrigin == null
+                    || lookupEntity.AbsRotation == null)
+                    return;
+                // if entity has no origin (0,0,0) then simply delete all found entities
+                // otherwise delete only if found by entity origin
+                if (Math.Round(lookupEntity.AbsOrigin.X, 3) != Math.Round(entity.Origin[0], 3)
+                    && Math.Round(lookupEntity.AbsOrigin.Y, 3) != Math.Round(entity.Origin[1], 3)
+                    && Math.Round(lookupEntity.AbsOrigin.Z, 3) != Math.Round(entity.Origin[2], 3)
+                    && Math.Round(entity.Origin[0], 3) != 0.0f
+                    && Math.Round(entity.Origin[1], 3) != 0.0f
+                    && Math.Round(entity.Origin[2], 3) != 0.0f)
+                    return;
+                Console.WriteLine(Localizer["entities.deleted"].Value
+                    .Replace("{type}", entity.ClassName)
+                    .Replace("{origin}", $"{lookupEntity.AbsOrigin.X} {lookupEntity.AbsOrigin.Y} {lookupEntity.AbsOrigin.Z}")
+                    .Replace("{angle}", $"{lookupEntity.AbsRotation.X} {lookupEntity.AbsRotation.Y} {lookupEntity.AbsRotation.Z}"));
+                lookupEntity.Remove();
             }
         }
 

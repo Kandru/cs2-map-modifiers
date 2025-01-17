@@ -8,6 +8,7 @@ namespace MapModifiers
 {
     public class MapConfigEntity
     {
+        [JsonPropertyName("type")] public int Type { get; set; } = 0; // 0 = Add, 1 = Remove
         [JsonPropertyName("name")] public string Name { get; set; } = "unnamed";
         [JsonPropertyName("class_name")] public string ClassName { get; set; } = "info_player_start";
         [JsonPropertyName("team")] public int Team { get; set; } = 0; // 0 = None, 1 = Spectator, 2 = Terrorist, 3 = CounterTerroist
