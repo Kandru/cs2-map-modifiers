@@ -6,7 +6,7 @@
     "core.foundconfig": "[MapModifiers] Found {count} matching map-specific configurations for {mapName}!",
     "core.configinitialized": "[MapModifiers] Configuration initialized!",
     "entities.error.noentity": "[MapModifiers] ERROR: could not spawn entity",
-    "entities.created": "[MapModifiers] created spawn point for {type} at {origin} with angle {angle}",
+    "entities.created": "[MapModifiers] created entity for {type} at {origin} with angle {angle}",
     "entities.deleted": "[MapModifiers] deleted entity for {type} at {origin} with angle {angle}",
     "spawnpoints.count": "[MapModifiers] Spawns: {spawns}x dm, {ct}x ct, {t}x t, {ctteamselect}x ct teamselect, {tteamselect}x t teamselect, {ctintro}x ct intro, {tintro}x t intro for {maxplayers} players.",
     "spawnpoints.countspawns.warning": "[MapModifiers] Only {spawns} dm spawns, {ct} ct spawns and {t} t spawns for {maxplayers} players!",
