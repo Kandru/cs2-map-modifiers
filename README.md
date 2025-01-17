@@ -7,7 +7,7 @@
 [![issues - cs2-map-modifier](https://img.shields.io/github/issues/Kandru/cs2-map-modifiers)](https://github.com/Kandru/cs2-map-modifier/issues)
 [![](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/donate/?hosted_button_id=C2AVYKGVP9TRG)
 
-The MapModifiers plugin is a powerful tool designed to enhance and customize your Counter-Strike 2 game server. It provides a range of functionalities to manage and modify various aspects of the map, making it ideal for creating dynamic and engaging gameplay experiences.
+The MapModifiers plugin is a powerful tool designed to enhance and customize your Counter-Strike 2 game server. It provides a range of functionalities to manage and modify various aspects of the map, making it ideal for fixing half-broken maps where the mapper itself does not want to change certain things.
 
 *Hint: you can update this plugin easily with the [Update Manager Plugin](https://github.com/Kandru/cs2-update-manager/)*
 
@@ -15,13 +15,16 @@ Key Features
 1. Spawn Point Management
 Add custom spawn points to your map to introduce new gameplay scenarios. Whether you need additional spawn locations for special events or unique game modes, MapModifiers has you covered.
 
-2. Client Commands
+2. Entity Management
+Add or remove entities on round start. E.g. add or remove hostages, sound entities, ...
+
+3. Client Commands
 Execute specific client commands when a player joins the game. This feature allows you to customize the player's experience right from the start, ensuring that necessary configurations and settings are applied immediately upon joining.
 
-3. Server Commands
+4. Server Commands
 Run server commands automatically when the map launches. This ensures that the server is properly configured and ready for gameplay, with all necessary settings and adjustments applied as soon as the map is loaded.
 
-4. Spectator after Join
+5. Spectator after Join
 Moves a player to spectator after join if no team got picked. Will avoid spawning AFK players into teams automatically but still provide the team join overlay for active players.
 
 
@@ -35,13 +38,22 @@ Moves a player to spectator after join if no team got picked. Will avoid spawnin
 
 There are some commands avaible to work this this plugin. You'll need the permission @mapmodifiers/spawnpoints to be able to execute them. Please refer to the CounterstrikeSharp documentation on how to grant them.
 
-### !addspawn [ct/t] [name?]
+### !addspawn [ct/t/both] [name?]
 Adds a new spawn at your current player position with an optional name. The name is purely for identification of this spawn point in the configuration file later on.
 
-Can be either executed in the chat (with ! before addspawn) or inside the client command line.
+```
+!addspawn ct
+```
 
-### !delspawn
-Deletes the nearest custom spawn point. Your player needs to be at least around 2m nearby. Deleted spawn points will be completely removed after map reload.
+### !addentity [entity] [ct/t/spec/none] [permanent <true/false>?] [name?]
+Adds a new entity at your current player position which is not permanent if not stated otherwise and with an optional name. The name is purely for identification of this spawn point in the configuration file later on.
+
+```
+!addentity hostage_entity ct true
+```
+
+### !delentity [delete <true/false>?]
+Deletes the nearest custom entity. This does not delete other entities than custom entities in the config. Set the optional parameter "delete" to "true" and it will delete the entity instantly. Otherwise it will be deleted after reloading the map. Some entities like spawns to not like to be deleted instantly or the server will crash.
 
 ### !showspawns
 Shows all spawn points and hides them if executed a second time. Good to know all original spawn points and add custom ones. Custom spawn points will have a slightly lighter color depending on the team the spawn point does belong to.
@@ -60,37 +72,38 @@ This Plugin does automatically create a readable JSON configuration file. This c
       "client_cmds": [
           "play sounds/vo/announcer/cs2_classic/bombpl.vsnd"
       ],
+      "disable_team_intro": true,
       "move_to_spectator_on_join": true,
-      "move_to_spectator_on_join_delay": 13.9,
-      "remove_original_spawns": false,
-      "statck_original_t_spawns": false,
-      "statck_original_ct_spawns": false,
-      "t_spawns": [
+      "entities": [
         {
-          "name": "Test1",
+          "type": 0,
+          "name": "",
+          "class_name": "info_player_terrorist",
+          "team": 0,
           "origin": [
-            -1723.3846,
-            -815.19,
-            115.46165
+            -347.66858,
+            1304.3175,
+            162.79282
           ],
           "angle": [
             0,
-            164.21198,
+            -98.82168,
             0
           ]
-        }
-      ],
-      "ct_spawns": [
+        },
         {
-          "name": "Test2",
+          "type": 0,
+          "name": "",
+          "class_name": "info_player_terrorist",
+          "team": 0,
           "origin": [
-            297.18787,
-            2288.9773,
-            -118.96875
+            -339.65503,
+            1234.3063,
+            162.73746
           ],
           "angle": [
             0,
-            -81.64387,
+            -109.169426,
             0
           ]
         }
@@ -107,17 +120,14 @@ Executes server side commands on each map load.
 ### client_cmds
 Executes client side commands on player join.
 
-### move_to_spectator_on_join(_delay)
-Per default players that are connecting will join a team after 15 seconds even if they're AFK. This will provide the player with 14.9 seconds join time per default and move him to spectator if he did not choose a team yet. AFK players from the last map will not be AFK inside a team this way.
+### disable_team_intro
+Disables the team intro in competition mode (e.g. on map start or half-time team switch) when a map does not provide the team intro entities. When disabling this on a custom map without these entities there is a delay until players can buy.
 
-### remove_original_spawns
-Removes the original map-specific spawn points when each side has at least one custom spawn point.
+### move_to_spectator_on_join
+Per default players that are connecting will join a team after 15 seconds even if they're AFK. This will provide the player with 14.9 seconds join time per default and move him to spectator if he did not choose a team yet. AFK players from the last map will not be moved into a team with this feature.
 
-### statck_original_t_spawns / statck_original_ct_spawns (not implemented yet)
-Stacks another spawn point on each original map-specific spawn point. This doubles the spawn points. Make sure there is enough space above each spawn point.
-
-### t_spawns / ct_spawns
-List of custom spawn points for each team. Includes an optional name, the origin (position) and the angle (looking direction of a player on spawn) of each spawn.
+### entities
+List of entities to create or remove on round start. Can be spawn points as well as hostages or other stuff.
 
 ## Installation
 
