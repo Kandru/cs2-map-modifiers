@@ -4,6 +4,6 @@ namespace MapModifiers
 {
     public partial class MapModifiers : BasePlugin
     {
-        public override string ModuleVersion => "0.0.27";
+        public override string ModuleVersion => "0.0.28";
     }
 }
