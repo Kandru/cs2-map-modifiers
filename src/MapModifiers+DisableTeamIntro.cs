@@ -22,6 +22,7 @@ namespace MapModifiers
                 {
                     Console.WriteLine(Localizer["disableteamintro"]);
                     Server.ExecuteCommand("mp_team_intro_time 0");
+                    Server.ExecuteCommand("mp_halftime_duration 5");
                 }
             }
         }
