@@ -72,7 +72,6 @@ This Plugin does automatically create a readable JSON configuration file. This c
       "client_cmds": [
           "play sounds/vo/announcer/cs2_classic/bombpl.vsnd"
       ],
-      "disable_team_intro": true,
       "move_to_spectator_on_join": true,
       "entities": [
         {
@@ -119,9 +118,6 @@ Executes server side commands on each map load.
 
 ### client_cmds
 Executes client side commands on player join.
-
-### disable_team_intro
-Disables the team intro in competition mode (e.g. on map start or half-time team switch) when a map does not provide the team intro entities. When disabling this on a custom map without these entities there is a delay until players can buy.
 
 ### move_to_spectator_on_join
 Per default players that are connecting will join a team after 15 seconds even if they're AFK. This will provide the player with 14.9 seconds join time per default and move him to spectator if he did not choose a team yet. AFK players from the last map will not be moved into a team with this feature.

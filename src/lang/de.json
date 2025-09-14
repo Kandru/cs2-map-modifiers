@@ -15,6 +15,5 @@
     "spawnpoints.marker.noentity": "[MapModifiers] FEHLER: Konnte Entität nicht erstellen",
     "entities.onmapstart": "[MapModifiers] Überprüfe Entitäten für Karte {mapName}",
     "clientcommands.execute": "[MapModifiers] Client-Befehl ausgeführt: {command} für {player}",
-    "servercommands.execute": "[MapModifiers] Server-Befehl ausgeführt: {command} für Karte {mapName}",
-    "disableteamintro": "[MapModifiers] Deaktiviere Team Intro weil kein Team Intro Entity gefunden wurde."
+    "servercommands.execute": "[MapModifiers] Server-Befehl ausgeführt: {command} für Karte {mapName}"
 }

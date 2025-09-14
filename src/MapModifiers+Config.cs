@@ -21,8 +21,6 @@ namespace MapModifiers
         // commands
         [JsonPropertyName("server_cmds")] public List<string> ServerCommands { get; set; } = new();
         [JsonPropertyName("client_cmds")] public List<string> ClientCommands { get; set; } = new();
-        // disable team intro if no intro entity was found
-        [JsonPropertyName("disable_team_intro")] public bool DisableTeamIntro { get; set; } = true;
         // spectator
         [JsonPropertyName("move_to_spectator_on_join")] public bool MovetoSpectatorOnJoin { get; set; } = true;
         // spawns

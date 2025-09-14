@@ -15,6 +15,5 @@
     "spawnpoints.marker.noentity": "[MapModifiers] ERROR: could not spawn entity",
     "entities.onmapstart": "[MapModifiers] Checking entities for map {mapName}",
     "clientcommands.execute": "[MapModifiers] Executed client command: {command} for {player}",
-    "servercommands.execute": "[MapModifiers] Executed server command: {command} for map {mapName}",
-    "disableteamintro": "[MapModifiersPlugin] Set team intro cvar to 0 because no team intro entity found"
+    "servercommands.execute": "[MapModifiers] Executed server command: {command} for map {mapName}"
 }
