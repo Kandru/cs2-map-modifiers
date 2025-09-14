@@ -34,8 +34,8 @@ namespace MapModifiers
                 .Replace("{spawns}", playerSpawnEntities.Length.ToString())
                 .Replace("{ct}", ctSpawnEntities.Length.ToString())
                 .Replace("{t}", tSpawnEntities.Length.ToString())
-                .Replace("{ct_allowed}", ctSpawnEntities.Length.ToString())
-                .Replace("{t_allowed}", tSpawnEntities.Length.ToString())
+                .Replace("{ct_allowed}", amountCounterTerroristsAllowedToSpawn.ToString())
+                .Replace("{t_allowed}", amountTerroristsAllowedToSpawn.ToString())
                 .Replace("{maxplayers}", Server.MaxPlayers.ToString()));
             if (playerSpawnEntities.Length < (amountTerroristsAllowedToSpawn + amountCounterTerroristsAllowedToSpawn)
                 && (ctSpawnEntities.Length < amountCounterTerroristsAllowedToSpawn
@@ -45,8 +45,8 @@ namespace MapModifiers
                     .Replace("{spawns}", playerSpawnEntities.Length.ToString())
                     .Replace("{ct}", ctSpawnEntities.Length.ToString())
                     .Replace("{t}", tSpawnEntities.Length.ToString())
-                    .Replace("{ct_allowed}", ctSpawnEntities.Length.ToString())
-                    .Replace("{t_allowed}", tSpawnEntities.Length.ToString())
+                    .Replace("{ct_allowed}", amountCounterTerroristsAllowedToSpawn.ToString())
+                    .Replace("{t_allowed}", amountTerroristsAllowedToSpawn.ToString())
                     .Replace("{maxplayers}", Server.MaxPlayers.ToString());
                 Console.WriteLine(message);
                 SendGlobalChatMessage(message);
