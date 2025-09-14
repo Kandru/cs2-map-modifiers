@@ -2,6 +2,7 @@ using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Utils;
+using MapModifiers.Utils;
 using System.Drawing;
 
 namespace MapModifiers
@@ -14,14 +15,29 @@ namespace MapModifiers
             var playerSpawnEntities = Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("info_player_start").ToArray();
             var ctSpawnEntities = Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("info_player_counterterrorist").ToArray();
             var tSpawnEntities = Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("info_player_terrorist").ToArray();
+            // count max players per team
+            int amountTerroristsAllowedToSpawn = Server.MaxPlayers / 2;
+            int amountCounterTerroristsAllowedToSpawn = Server.MaxPlayers / 2;
+            // check the real values via GameRules (if available) and overwrite the defaults
+            var NumSpawnableTerrorists = GameRules.Get("NumSpawnableTerrorist");
+            if (NumSpawnableTerrorists is int numSpawnableTerrorists)
+            {
+                amountTerroristsAllowedToSpawn = numSpawnableTerrorists;
+            }
+            var NumSpawnableCTs = GameRules.Get("NumSpawnableCT");
+            if (NumSpawnableCTs is int numSpawnableCTs)
+            {
+                amountCounterTerroristsAllowedToSpawn = numSpawnableCTs;
+            }
+            // print info to console
             Console.WriteLine(Localizer["spawnpoints.count"].Value
                 .Replace("{spawns}", playerSpawnEntities.Length.ToString())
                 .Replace("{ct}", ctSpawnEntities.Length.ToString())
                 .Replace("{t}", tSpawnEntities.Length.ToString())
                 .Replace("{maxplayers}", Server.MaxPlayers.ToString()));
-            if ((playerSpawnEntities.Length
-                + ctSpawnEntities.Length
-                + tSpawnEntities.Length) < Server.MaxPlayers)
+            if (playerSpawnEntities.Length < (amountTerroristsAllowedToSpawn + amountCounterTerroristsAllowedToSpawn)
+                && (ctSpawnEntities.Length < amountCounterTerroristsAllowedToSpawn
+                || tSpawnEntities.Length < amountTerroristsAllowedToSpawn))
             {
                 var message = Localizer["spawnpoints.countspawns.warning"].Value
                     .Replace("{spawns}", playerSpawnEntities.Length.ToString())
