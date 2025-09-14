@@ -10,20 +10,14 @@ namespace MapModifiers
     {
         private void SpawnPointsOnRoundStart(EventRoundStart @event, GameEventInfo info)
         {
-            // count deathmatch spawns
+            // count spawns
             var playerSpawnEntities = Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("info_player_start").ToArray();
-            // count ct spawns
             var ctSpawnEntities = Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("info_player_counterterrorist").ToArray();
-            var ctTeamSpawnEntities = Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("team_select_counterterrorist").ToArray();
-            // count t spawns
             var tSpawnEntities = Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("info_player_terrorist").ToArray();
-            var tTeamSpawnEntities = Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("team_select_terrorist").ToArray();
             Console.WriteLine(Localizer["spawnpoints.count"].Value
                 .Replace("{spawns}", playerSpawnEntities.Length.ToString())
                 .Replace("{ct}", ctSpawnEntities.Length.ToString())
-                .Replace("{ctteamselect}", ctTeamSpawnEntities.Length.ToString())
                 .Replace("{t}", tSpawnEntities.Length.ToString())
-                .Replace("{tteamselect}", tTeamSpawnEntities.Length.ToString())
                 .Replace("{maxplayers}", Server.MaxPlayers.ToString()));
             if ((playerSpawnEntities.Length
                 + ctSpawnEntities.Length
@@ -34,15 +28,6 @@ namespace MapModifiers
                     .Replace("{ct}", ctSpawnEntities.Length.ToString())
                     .Replace("{t}", tSpawnEntities.Length.ToString())
                     .Replace("{maxplayers}", Server.MaxPlayers.ToString());
-                Console.WriteLine(message);
-                SendGlobalChatMessage(message);
-            }
-            if (ctTeamSpawnEntities.Length < 1
-                || tTeamSpawnEntities.Length < 1)
-            {
-                var message = Localizer["spawnpoints.countteamspawns.warning"].Value
-                    .Replace("{ctteamselect}", ctTeamSpawnEntities.Length.ToString())
-                    .Replace("{tteamselect}", tTeamSpawnEntities.Length.ToString());
                 Console.WriteLine(message);
                 SendGlobalChatMessage(message);
             }
