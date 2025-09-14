@@ -19,12 +19,12 @@ namespace MapModifiers
             int amountTerroristsAllowedToSpawn = Server.MaxPlayers / 2;
             int amountCounterTerroristsAllowedToSpawn = Server.MaxPlayers / 2;
             // check the real values via GameRules (if available) and overwrite the defaults
-            var NumSpawnableTerrorists = GameRules.Get("NumSpawnableTerrorist");
+            var NumSpawnableTerrorists = GameRules.Get("MaxNumTerrorists");
             if (NumSpawnableTerrorists is int numSpawnableTerrorists)
             {
                 amountTerroristsAllowedToSpawn = numSpawnableTerrorists;
             }
-            var NumSpawnableCTs = GameRules.Get("NumSpawnableCT");
+            var NumSpawnableCTs = GameRules.Get("MaxNumCTs");
             if (NumSpawnableCTs is int numSpawnableCTs)
             {
                 amountCounterTerroristsAllowedToSpawn = numSpawnableCTs;
