@@ -27,7 +27,7 @@ namespace MapModifiers
                     // get convar
                     ConVar? mpForcePickTime = ConVar.Find("mp_force_pick_time");
                     if (mpForcePickTime == null) return HookResult.Continue;
-                    AddTimer(mpForcePickTime.GetPrimitiveValue<float>() - 0.1f, () =>
+                    AddTimer(mpForcePickTime.GetPrimitiveValue<float>() - 0.2f, () =>
                     {
                         if (player == null || !player.IsValid) return;
                         if (player.Team != CsTeam.None) return;
