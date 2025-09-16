@@ -9,6 +9,7 @@ namespace MapModifiers
         public override string ModuleAuthor => "Jon-Mailes Graeffe <mail@jonni.it> / Kalle <kalle@kandru.de>";
 
         private string _currentMap = "";
+        private bool _firstRoundOfMap = true;
 
         public override void Load(bool hotReload)
         {
@@ -18,8 +19,9 @@ namespace MapModifiers
             RegisterClientCommandsListeners();
             RegisterSpectatorOnJoinListeners();
             RegisterListener<Listeners.OnMapStart>(OnMapStart);
-            RegisterEventHandler<EventRoundStart>(OnRoundStart);
+            RegisterListener<Listeners.OnMapEnd>(OnMapEnd);
             RegisterListener<Listeners.OnServerPrecacheResources>(OnServerPrecacheResources);
+            RegisterEventHandler<EventRoundStart>(OnRoundStart);
             // print message if hot reload
             if (hotReload)
             {
@@ -33,7 +35,13 @@ namespace MapModifiers
 
         public override void Unload(bool hotReload)
         {
+            // remove listeners
             RemoveClientCommandsListeners();
+            RemoveSpectatorOnJoinListeners();
+            RemoveListener<Listeners.OnMapStart>(OnMapStart);
+            RemoveListener<Listeners.OnMapEnd>(OnMapEnd);
+            RemoveListener<Listeners.OnServerPrecacheResources>(OnServerPrecacheResources);
+            DeregisterEventHandler<EventRoundStart>(OnRoundStart);
             Console.WriteLine(Localizer["core.unload"]);
         }
 
@@ -49,12 +57,22 @@ namespace MapModifiers
             ClientCommandsOnMapStart(mapName);
         }
 
+        private void OnMapEnd()
+        {
+            _firstRoundOfMap = true;
+        }
+
         private HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
         {
             // inform plugins
             EntitiesOnRoundStart(@event, info);
-            SpawnPointsOnRoundStart(@event, info);
             ServerCommandsOnRoundStart();
+            if (_firstRoundOfMap)
+            {
+                SpawnPointsOnRoundStart(@event, info);
+            }
+            // reset first round flag
+            _firstRoundOfMap = false;
             // continue event
             return HookResult.Continue;
         }

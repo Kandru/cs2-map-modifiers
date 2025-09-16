@@ -11,6 +11,11 @@ namespace MapModifiers
             RegisterEventHandler<EventPlayerActivate>(SpectatorOnJoinOnPlayerActivate);
         }
 
+        private void RemoveSpectatorOnJoinListeners()
+        {
+            DeregisterEventHandler<EventPlayerActivate>(SpectatorOnJoinOnPlayerActivate);
+        }
+
         private HookResult SpectatorOnJoinOnPlayerActivate(EventPlayerActivate @event, GameEventInfo info)
         {
             CCSPlayerController? player = @event.Userid;
